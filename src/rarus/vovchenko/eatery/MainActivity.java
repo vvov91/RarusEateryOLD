@@ -6,7 +6,7 @@ import android.view.Menu;
 
 public class MainActivity extends Activity {
 	// адаптер для работы с БД
-	EateryDBAdapter eateryDBAdapter;
+	EateryDBAdapter db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -14,8 +14,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         
         // экземпляр адаптора для работы с БД
-        eateryDBAdapter = new EateryDBAdapter(this);
-        eateryDBAdapter.open();
+        db = new EateryDBAdapter(this);
+        db.open();
     }
 
     @Override
@@ -29,6 +29,6 @@ public class MainActivity extends Activity {
     	super.onDestroy();
     	
     	// закрываем соединение с БД
-    	eateryDBAdapter.close();
+    	db.close();
     }
 }
