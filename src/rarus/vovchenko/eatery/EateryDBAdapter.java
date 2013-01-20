@@ -200,6 +200,17 @@ public class EateryDBAdapter {
 		}
 	}
 	//-----------------------------------------------------
+	// удаление всех блюд
+	void dishDeleteAll() {
+		db.beginTransaction();
+		try {
+			db.delete(DB_TABLE_DISHES, null, null);	    
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+	}
+	//-----------------------------------------------------
 	// изменение рейтинга блюда
 	void dishSetRating(int _id, String _rating) {
 		db.beginTransaction();
@@ -244,6 +255,28 @@ public class EateryDBAdapter {
 			db.endTransaction();
 		}
 	}
+	//-----------------------------------------------------
+	// удаление всех меню
+	void menuDeleteAll() {
+		db.beginTransaction();
+		try {
+			db.delete(DB_TABLE_MENU, null, null);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+	}
+	//-----------------------------------------------------
+	// удаление меню на определенную дату
+	void menuDeleteAtDate(String _date) {
+		db.beginTransaction();
+		try {
+			db.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ?", new String[] {_date});
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+	}  
 	//-----------------------------------------------------
 	// получение массива строк с датами на которые доступны меню
 	ArrayList<String> menuGetDates() {
@@ -360,6 +393,28 @@ public class EateryDBAdapter {
 		}
 	}
 	//-----------------------------------------------------
+	// удаление всех заказов на определенную дату
+	void orderDeleteAtDate(String _date) {
+		db.beginTransaction();
+		try {
+			db.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ?", new String[] {_date});
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+	}
+	//-----------------------------------------------------
+	// удаление всех заказов
+	void orderDeleteAll() {
+		db.beginTransaction();
+		try {
+			db.delete(DB_TABLE_ORDERS, null, null);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+	}
+	//-----------------------------------------------------
 	// получение количества заказов
 	int orderGetCount() {
 		int result = 0;
@@ -421,6 +476,22 @@ public class EateryDBAdapter {
 			db.endTransaction();
 		}
 		return result;
+	}
+	//-----------------------------------------------------
+	
+	
+	//-----------------------------------------------------
+	// удалить все данные по блюдам, меню и заказам
+	void deleteAll() {
+		db.beginTransaction();
+		try {
+			db.delete(DB_TABLE_DISHES, null, null);
+			db.delete(DB_TABLE_MENU, null, null);
+			db.delete(DB_TABLE_ORDERS, null, null);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
 	}
 	//-----------------------------------------------------
 	
