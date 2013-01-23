@@ -173,13 +173,13 @@ public class EateryDBAdapter {
 	// БЛЮДА
 	//-----------------------------------------------------
 	// добавление блюда
-	void dishAdd(String _name, String _description, int _portioned, float _price, String _rating) {
+	void dishAdd(String _name, String _description, boolean _portioned, float _price, String _rating) {
 		db.beginTransaction();
 		try {
 			ContentValues data = new ContentValues();
 		    data.put(DISHES_NAME_NAME, _name);
 		    data.put(DISHES_DESCRIPTION_NAME, _description);
-		    data.put(DISHES_PORTIONED_NAME, _portioned);
+		    data.put(DISHES_PORTIONED_NAME, (_portioned ? 1 : 0));
 		    data.put(DISHES_PRICE_NAME, _price);
 		    data.put(DISHES_RATING_NAME, _rating);
 		    db.insert(DB_TABLE_DISHES, null, data);		    
@@ -328,7 +328,7 @@ public class EateryDBAdapter {
 					dish.set_id(c.getInt(0));
 					dish.setName(c.getString(1));
 					dish.setDescription(c.getString(2));
-					dish.setPortioned(c.getInt(3));
+					dish.setPortioned((c.getInt(3) == 0 ? false : true));
 					dish.setPrice(c.getFloat(4));
 					dish.setRating(c.getString(5));
 					dish.setAvailable_ammount(c.getFloat(6));
@@ -463,7 +463,7 @@ public class EateryDBAdapter {
 					dish.set_id(c.getInt(0));
 					dish.setName(c.getString(1));
 					dish.setDescription(c.getString(2));
-					dish.setPortioned(c.getInt(3));
+					dish.setPortioned((c.getInt(3) == 0 ? false : true));
 					dish.setPrice(c.getFloat(4));
 					dish.setRating(c.getString(5));
 					dish.setAvailable_ammount(c.getFloat(6));

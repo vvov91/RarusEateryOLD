@@ -4,7 +4,7 @@ public class Dish {
 	private int _id;
 	private String name;
 	private String description;
-	private int portioned;
+	private boolean portioned;
 	private float price;
 	private String rating;
 	private float available_ammount;
@@ -28,10 +28,10 @@ public class Dish {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public int getPortioned() {
+	public boolean isPortioned() {
 		return portioned;
 	}
-	public void setPortioned(int portioned) {
+	public void setPortioned(boolean portioned) {
 		this.portioned = portioned;
 	}
 	public float getPrice() {
