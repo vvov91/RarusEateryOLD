@@ -1,5 +1,11 @@
 package rarus.vovchenko.eatery;
 
+/**
+ * Объект меню блюдо
+ * 
+ * @author Victor Vovchenko <v.vovchenko91@gmail.com>
+ *
+ */
 public class Dish {
 	private int _id;
 	private String name;

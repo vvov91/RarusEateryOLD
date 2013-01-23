@@ -11,136 +11,208 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
+/**
+ * Предоставляет интерфейс для работы с БД
+ * 
+ * @author Victor Vovchenko <v.vovchenko91@gmail.com>
+ *
+ */
 public class EateryDBAdapter {
-	// файл БД
-	private static final String DB_NAME = "Eatery.db";
-	// версия БД
-	private static final int DB_VERSION = 1;
-	
-	// таблицы 
-	private static final String DB_TABLE_DISHES = "dishesTable";
-	private static final String DB_TABLE_MENU = "menuTable";
-	private static final String DB_TABLE_ORDERS = "ordersTable";
-	private static final String DB_TABLE_SETTINGS = "settingsTable";
-	
-	// индекс (ключ) столбца
-	public static final String KEY_ID = "_id";
+    // файл БД
+    private static final String DB_NAME = "Eatery.db";
+    // версия БД
+    private static final int DB_VERSION = 1;
 
-	//-----------------------------------------------------
-	// имя каждого столбца в БД
-	// DISHES
-	// название
-	public static final String DISHES_NAME_NAME = "name";
-	// описание
-	public static final String DISHES_DESCRIPTION_NAME = "description";
-	// порционность
-	public static final String DISHES_PORTIONED_NAME = "portioned";
-	// цена
-	public static final String DISHES_PRICE_NAME = "price";
-	// рейтинг
-	public static final String DISHES_RATING_NAME = "rating";
-	//-----------------------------------------------------
-	// MENU
-	// дата
-	public static final String MENU_DATE_NAME = "date";
-	// id блюда
-	public static final String MENU_DISH_ID_NAME = "dish_id";
-	// доступный для заказа объём
-	public static final String MENU_AVALAM_NAME = "available_ammount";	
-	// объём заказанного
-	public static final String MENU_ORDERAM_NAME = "ordered_ammount";
-	//-----------------------------------------------------
-	// ORDERS
-	// дата
-	public static final String ORDERS_DATE_NAME = "date";
-	// id блюда
-	public static final String ORDERS_DISH_ID_NAME = "dish_id";
-	//-----------------------------------------------------
-	// SETTINGS
-	// адрес сервера	
-	public static final String SETTINGS_SERVER_NAME = "server";
-	// логин
-	public static final String SETTINGS_LOGIN_NAME = "login";
-	// пароль
-	public static final String SETTINGS_PASSWORD_NAME = "password";
-	// режим работы
-	public static final String SETTINGS_MODE_NAME = "mode";
-	//-----------------------------------------------------
+    // таблицы 
+    private static final String DB_TABLE_DISHES = "dishesTable";
+    private static final String DB_TABLE_MENU = "menuTable";
+    private static final String DB_TABLE_ORDERS = "ordersTable";
+    private static final String DB_TABLE_SETTINGS = "settingsTable";
 
-	//-----------------------------------------------------
-	// запросы для создания таблиц
-	// DISHES
-	private static final String DB_CREATE_DISHES = "CREATE TABLE " +
-		DB_TABLE_DISHES + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-		DISHES_NAME_NAME + " TEXT NOT NULL, " +
-		DISHES_DESCRIPTION_NAME + " TEXT NOT NULL, " +
-		DISHES_PORTIONED_NAME + " INT DEFAULT 0, " +
-		DISHES_PRICE_NAME + " FLOAT NOT NULL, " +
-		DISHES_RATING_NAME + " TEXT DEFAULT 0);";
-	//-----------------------------------------------------
-	// MENU
-	private static final String DB_CREATE_MENU = "CREATE TABLE " +
-		DB_TABLE_MENU + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-		MENU_DATE_NAME + " DATE NOT NULL, " +
-		MENU_DISH_ID_NAME + " INTEGER NOT NULL, " +
-		MENU_AVALAM_NAME + " FLOAT NOT NULL DEFAULT -1, " +
-		MENU_ORDERAM_NAME + " FLOAT NOT NULL DEFAULT 0);";
-	//-----------------------------------------------------
-	// ORDERS
-	private static final String DB_CREATE_ORDERS = "CREATE TABLE " +
-		DB_TABLE_ORDERS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-		ORDERS_DATE_NAME + " DATE NOT NULL, " +
-		ORDERS_DISH_ID_NAME + " INTEGER NOT NULL);";
-	//-----------------------------------------------------
-	// SETTINGS
-	private static final String DB_CREATE_SETTINGS = "CREATE TABLE " +
-		DB_TABLE_SETTINGS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-		SETTINGS_SERVER_NAME + " TEXT NOT NULL, " +
-		SETTINGS_LOGIN_NAME + " TEXT NOT NULL, " +
-		SETTINGS_PASSWORD_NAME + " TEXT NOT NULL, " +
-		SETTINGS_MODE_NAME + " TEXT NOT NULL DEFAULT online);";
+    /**
+     * Название столбца "_id" во всех таблицах. Индекс (ключ).
+     */
+    public static final String KEY_ID = "_id";
+
+    //-----------------------------------------------------
+    // имя каждого столбца в БД
+    // таблица DISHES
+    /**
+     * Название столбца "название" в таблице "Блюда"
+     */
+    public static final String DISHES_NAME_NAME = "name";
+    
+    /**
+     * Название столбца "описание" в таблице "Блюда"
+     */
+    public static final String DISHES_DESCRIPTION_NAME = "description";
+
+    /**
+     * Название столбца "порционность" в таблице "Блюда"
+     */
+    public static final String DISHES_PORTIONED_NAME = "portioned";
+
+    /**
+     * Название столбца "цена" в таблице "Блюда"
+     */
+    public static final String DISHES_PRICE_NAME = "price";
+
+    /**
+     * Название столбца "рейтинг" в таблице "Блюда"
+     */
+    public static final String DISHES_RATING_NAME = "rating";
+    //-----------------------------------------------------
+    // таблица MENU
+    /**
+     * Название столбца "дата" в таблице "Меню"
+     */
+    public static final String MENU_DATE_NAME = "date";
+
+    /**
+     * Название столбца "id блюда" в таблице "Меню"
+     */
+    public static final String MENU_DISH_ID_NAME = "dish_id";
+
+    /**
+     * Название столбца "доступный для заказа объём" в таблице "Меню"
+     */
+    public static final String MENU_AVALAM_NAME = "available_ammount";	
+
+    /**
+     * Название столбца "объём заказанного" в таблице "Меню"
+     */
+    public static final String MENU_ORDERAM_NAME = "ordered_ammount";
+    //-----------------------------------------------------
+    // таблица ORDERS
+    /**
+     * Название столбца "дата" в таблице "Заказы"
+     */
+    public static final String ORDERS_DATE_NAME = "date";
+
+    /**
+     * Название столбца "id блюда" в таблице "Заказы"
+     */
+    public static final String ORDERS_DISH_ID_NAME = "dish_id";
+    //-----------------------------------------------------
+    // таблица SETTINGS
+    /**
+     * Название столбца "адрес сервера" в таблице "Настройки"
+     */
+    public static final String SETTINGS_SERVER_NAME = "server";
+
+    /**
+     * Название столбца "логин" в таблице "Настройки"
+     */
+    public static final String SETTINGS_LOGIN_NAME = "login";
+
+    /**
+     * Название столбца "пароль" в таблице "Настройки"
+     */
+    public static final String SETTINGS_PASSWORD_NAME = "password";
+    
+    /**
+     * Название столбца "режим работы" в таблице "Настройки"
+     */
+    public static final String SETTINGS_MODE_NAME = "mode";
+    //-----------------------------------------------------
+
+    //-----------------------------------------------------
+    // запросы для создания таблиц
+    // DISHES
+    private static final String DB_CREATE_DISHES = "CREATE TABLE " +
+        DB_TABLE_DISHES + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        DISHES_NAME_NAME + " TEXT NOT NULL, " +
+        DISHES_DESCRIPTION_NAME + " TEXT NOT NULL, " +
+        DISHES_PORTIONED_NAME + " INT DEFAULT 0, " +
+        DISHES_PRICE_NAME + " FLOAT NOT NULL, " +
+        DISHES_RATING_NAME + " TEXT DEFAULT 0);";
+    //-----------------------------------------------------
+    // MENU
+    private static final String DB_CREATE_MENU = "CREATE TABLE " +
+        DB_TABLE_MENU + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        MENU_DATE_NAME + " DATE NOT NULL, " +
+        MENU_DISH_ID_NAME + " INTEGER NOT NULL, " +
+        MENU_AVALAM_NAME + " FLOAT NOT NULL DEFAULT -1, " +
+        MENU_ORDERAM_NAME + " FLOAT NOT NULL DEFAULT 0);";
+    //-----------------------------------------------------
+    // ORDERS
+    private static final String DB_CREATE_ORDERS = "CREATE TABLE " +
+        DB_TABLE_ORDERS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        ORDERS_DATE_NAME + " DATE NOT NULL, " +
+        ORDERS_DISH_ID_NAME + " INTEGER NOT NULL);";
+    //-----------------------------------------------------
+    // SETTINGS
+    private static final String DB_CREATE_SETTINGS = "CREATE TABLE " +
+        DB_TABLE_SETTINGS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        SETTINGS_SERVER_NAME + " TEXT NOT NULL, " +
+        SETTINGS_LOGIN_NAME + " TEXT NOT NULL, " +
+        SETTINGS_PASSWORD_NAME + " TEXT NOT NULL, " +
+        SETTINGS_MODE_NAME + " TEXT NOT NULL DEFAULT online);";
 	//-----------------------------------------------------
 	
 	// экземпляр БД
-	private SQLiteDatabase db;
+	private SQLiteDatabase mDb;
 	
 	// объект Context приложения, которое использует БД
 	private final Context context;
 	
 	// объект вспомогательного класса для работы с БД 
-	private DBHelper dbHelper;
+	private DBHelper mDbHelper;
 		
 	//-----------------------------------------------------
-	// конструктор
+    /**
+	 * Конструктор класса
+	 * 
+	 * @param _context
+	 *     текущий {@link Context}
+	 */
 	public EateryDBAdapter(Context _context) {
 		this.context = _context;
-		dbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
+		mDbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
 	}
 	//-----------------------------------------------------
 	
 	//-----------------------------------------------------
-	// открытие соединения с БД
-	// используется исключение
-	// если открыть базу в режиме записи невозможно
-	// база открывается в режиме чтения
+	/**
+	 * Открывает соединение с БД.
+	 * Если открыть базу в режиме записи невозможно, база открывается в режиме чтения.
+	 * 
+	 * @throws SQLException
+	 *     если БД не доступна для записи и открывает её в режиме чтения.
+	 */
 	public void open() throws SQLException {
 		try {
-			db = dbHelper.getWritableDatabase();
+			mDb = mDbHelper.getWritableDatabase();
 		} catch (SQLiteException ex) {
-			db = dbHelper.getReadableDatabase();
+			mDb = mDbHelper.getReadableDatabase();
 		}
 	}
 	//-----------------------------------------------------
-	// закрытие соединения с БД
+	/**
+	 * Закрывает соединение с БД
+	 */
 	public void close() {
-		db.close();
+		mDb.close();
 	}	
 	//-----------------------------------------------------
 	
 	//-----------------------------------------------------
-	// вспомогательный класс для работы с БД
+	/**
+	 * Реализует методы открытия и обновления БД
+	 */
 	private static class DBHelper extends SQLiteOpenHelper {
-		// конструктор
+		/**
+		 * Конструктор класса
+		 * 
+		 * @param context
+		 *     текущий {@link Context}
+		 * @param name
+		 *     имя файла БД
+		 * @param factory
+		 *     фабрика курсоров
+		 * @param version
+		 *     версия БД
+		 */
 		public DBHelper(Context context, String name, CursorFactory factory,
 				int version) {
 			super(context, name, factory, version);
@@ -162,7 +234,7 @@ public class EateryDBAdapter {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			// БД у нас пока в разработке
 			// в обновлении пока не нуждается
-			// поэтому это просто заглушка
+			// TODO: Реализовать процесс обновления БД в случае перехода к новой версии 
 		}		
 		//-----------------------------------------------------
 	}
@@ -172,9 +244,22 @@ public class EateryDBAdapter {
 	//-----------------------------------------------------
 	// БЛЮДА
 	//-----------------------------------------------------
-	// добавление блюда
+	/**
+	 * Добавляет блюдо
+	 * 
+	 * @param _name
+	 *     название
+	 * @param _description
+	 *     описание
+	 * @param _portioned
+	 *     порционность
+	 * @param _price
+	 *     цена
+	 * @param _rating
+	 *     рейтинг
+	 */
 	void dishAdd(String _name, String _description, boolean _portioned, float _price, String _rating) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
 			ContentValues data = new ContentValues();
 		    data.put(DISHES_NAME_NAME, _name);
@@ -182,45 +267,61 @@ public class EateryDBAdapter {
 		    data.put(DISHES_PORTIONED_NAME, (_portioned ? 1 : 0));
 		    data.put(DISHES_PRICE_NAME, _price);
 		    data.put(DISHES_RATING_NAME, _rating);
-		    db.insert(DB_TABLE_DISHES, null, data);		    
-			db.setTransactionSuccessful();
+		    mDb.insert(DB_TABLE_DISHES, null, data);		    
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}	
 	//-----------------------------------------------------
-	// удаление блюда
+	/**
+	 * Удаляет блюдо
+	 * 
+	 * @param _id
+	 *    id блюда
+	 */
 	void dishDelete(int _id) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_DISHES, KEY_ID + " = " + _id, null);	    
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_DISHES, KEY_ID + " = " + _id, null);	    
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// удаление всех блюд
+	/**
+	 * Удаляет все блюда
+	 */
 	void dishDeleteAll() {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_DISHES, null, null);	    
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_DISHES, null, null);	    
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
 	// изменение рейтинга блюда
+	/**
+	 * Изменяет рейтинг блюда
+	 * 
+	 * @param _id
+	 *     id блюда
+	 * @param _rating
+	 *     рейтинг
+	 */
 	void dishSetRating(int _id, String _rating) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
 			ContentValues data = new ContentValues();
 			data.put(DISHES_RATING_NAME, _rating);
-			db.update(DB_TABLE_DISHES, data, KEY_ID + " = ?", new String[] {Integer.toString(_id)});	    
-			db.setTransactionSuccessful();
+			mDb.update(DB_TABLE_DISHES, data, KEY_ID + " = ?",
+					new String[] {Integer.toString(_id)});	    
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
@@ -229,62 +330,95 @@ public class EateryDBAdapter {
 	//-----------------------------------------------------
 	// МЕНЮ
 	//-----------------------------------------------------
-	// добавление элемента меню
+	/**
+	 * Добавляет элемент в меню
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @param _dish_id
+	 *     id блюда
+	 * @param _availbale_ammount
+	 *     доступный для заказа объём
+	 * @param _ordered_ammount
+	 *     заказанный объём
+	 */
 	void menuAdd(String _date, int _dish_id, float _availbale_ammount, float _ordered_ammount) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
 			ContentValues data = new ContentValues();
 			data.put(MENU_DATE_NAME, _date);
 			data.put(MENU_DISH_ID_NAME, _dish_id);
 			data.put(MENU_AVALAM_NAME, _availbale_ammount);
 			data.put(MENU_ORDERAM_NAME, _ordered_ammount);
-			db.insert(DB_TABLE_MENU, null, data);
-			db.setTransactionSuccessful();
+			mDb.insert(DB_TABLE_MENU, null, data);
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// удаление элемента меню
+	/**
+	 * Удаляет элемент меню
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @param _dish_id
+	 *     id блюда
+	 */
 	void menuDelete(String _date, int _dish_id) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ? AND " + MENU_DISH_ID_NAME + " = ?", new String[] {_date, Integer.toString(_dish_id)});
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ? AND " + MENU_DISH_ID_NAME + " = ?",
+					new String[] {_date, Integer.toString(_dish_id)});
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// удаление всех меню
+	/**
+	 * Удаляет все меню
+	 */
 	void menuDeleteAll() {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_MENU, null, null);
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_MENU, null, null);
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// удаление меню на определенную дату
+	/**
+	 * Удаляет меню на определенную дату
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 */
 	void menuDeleteAtDate(String _date) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ?", new String[] {_date});
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ?", new String[] {_date});
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}  
 	//-----------------------------------------------------
-	// получение массива строк с датами на которые доступны меню
+	/**
+	 * Возвращает массив строк с датами на которые доступно меню
+	 * 
+	 * @return
+	 *     {@link ArrayList} из {@link String} дат.
+	 *     Даты в формате YYYY-MM-DD. Отсортированы по возрастанию.
+	 */
 	ArrayList<String> menuGetDates() {
 		ArrayList<String> result = new ArrayList<String>();
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.query(true, DB_TABLE_MENU, new String[] {MENU_DATE_NAME}, null, null, null, null, MENU_DATE_NAME + " ASC", null);
-			db.setTransactionSuccessful();
+			Cursor c = mDb.query(true, DB_TABLE_MENU, new String[] {MENU_DATE_NAME}, null, null, 
+					null, null, MENU_DATE_NAME + " ASC", null);
+			mDb.setTransactionSuccessful();
 			if (c.moveToFirst()) {
 				do {
 					result.add(c.getString(0));
@@ -292,36 +426,52 @@ public class EateryDBAdapter {
 				c.close();
 			}
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
 	//-----------------------------------------------------
-	// получение количества дат на которые доступны меню
+	/**
+	 * Вовзращает количество дат на которые доступно меню
+	 * 
+	 * @return
+	 *     int с кол-вом дат
+	 */
 	int menuGetDatesCount() {
 		int result = 0;
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.rawQuery("SELECT COUNT(DISTINCT " + MENU_DATE_NAME + ") FROM " + DB_TABLE_MENU, new String[] {});
+			Cursor c = mDb.rawQuery("SELECT COUNT(DISTINCT " + MENU_DATE_NAME + ") " +
+					"FROM " + DB_TABLE_MENU, new String[] {});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
-			db.setTransactionSuccessful();
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
 	//-----------------------------------------------------
-	// получение меню на определённую дату
+	/**
+	 * Возвращает объекты {@link Dish} меню на определенную дату
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @return
+	 *     {@link ArrayList} из объектов {@link Dish}
+	 */
 	ArrayList<Dish> menuGetListAtDate(String _date) {
 		ArrayList<Dish> result = new ArrayList<Dish>();
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.query(false, DB_TABLE_MENU + " AS MU INNER JOIN " + DB_TABLE_DISHES + " AS DS ON MU." + MENU_DISH_ID_NAME + " = DS." + KEY_ID,
-					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
+			Cursor c = mDb.query(false, DB_TABLE_MENU + " AS MU INNER JOIN " + DB_TABLE_DISHES +
+					" AS DS ON MU." + MENU_DISH_ID_NAME + " = DS." + KEY_ID,
+					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, 
+					DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, 
+					MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
 					MENU_DATE_NAME + " = ?", new String[] {_date}, null, null, null, null);
-			db.setTransactionSuccessful();
+			mDb.setTransactionSuccessful();
 			if (c.moveToFirst()) {
 				do {
 					Dish dish = new Dish();
@@ -338,23 +488,31 @@ public class EateryDBAdapter {
 				c.close();
 			}
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
 	//-----------------------------------------------------
-	// получение количества блюд в меню на определенную дату
+	/**
+	 * Возвращает количество блюд в меню на определенную дату
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @return
+	 *     int кол-во дат
+	 */
 	int menuGetCountAtDate(String _date) {
 		int result = 0;
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.rawQuery("SELECT COUNT(" + MENU_DISH_ID_NAME + ") FROM " + DB_TABLE_MENU + " WHERE " + MENU_DATE_NAME + " = ?", new String[] {_date});
+			Cursor c = mDb.rawQuery("SELECT COUNT(" + MENU_DISH_ID_NAME + ") FROM " + 
+					DB_TABLE_MENU + " WHERE " + MENU_DATE_NAME + " = ?", new String[] {_date});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
-			db.setTransactionSuccessful();
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
@@ -364,99 +522,150 @@ public class EateryDBAdapter {
 	//-----------------------------------------------------
 	// ЗАКАЗЫ
 	//-----------------------------------------------------
-	// добавление заказа
+	/**
+	 * Добавляет заказ
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @param _dish_id
+	 *     id блюда
+	 * @param _order_ammount
+	 *     объём заказанного
+	 */
 	void orderAdd(String _date, int _dish_id, float _order_ammount) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
 			ContentValues data_orders = new ContentValues();
 			data_orders.put(ORDERS_DATE_NAME, _date);
 			data_orders.put(ORDERS_DISH_ID_NAME, _dish_id);
-			db.insert(DB_TABLE_ORDERS, null, data_orders);
+			mDb.insert(DB_TABLE_ORDERS, null, data_orders);
 			
 			ContentValues data_menu = new ContentValues();
 			data_menu.put(MENU_ORDERAM_NAME, _order_ammount);
-			db.update(DB_TABLE_MENU, data_menu, MENU_DATE_NAME + " = ? AND " + MENU_DISH_ID_NAME + " = ?", new String[] {_date, Integer.toString(_dish_id)});
-			db.setTransactionSuccessful();
+			mDb.update(DB_TABLE_MENU, data_menu, MENU_DATE_NAME + " = ? AND " +
+					MENU_DISH_ID_NAME + " = ?", new String[] {_date, Integer.toString(_dish_id)});
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// удаление заказанного блюда на определенную дату
+	/**
+	 * Удаляет заказ на определенную дату
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @param _dish_id
+	 *     id блюда
+	 */
 	void orderDelete(String _date, int _dish_id) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ? AND " + ORDERS_DISH_ID_NAME + " = ?", new String[] {_date, Integer.toString(_dish_id)});
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ? AND " + 
+					ORDERS_DISH_ID_NAME + " = ?", new String[] {_date, Integer.toString(_dish_id)});
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// удаление всех заказов на определенную дату
+	/**
+	 * Удаляет все заказы на определенную дату
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 */
 	void orderDeleteAtDate(String _date) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ?", new String[] {_date});
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ?", new String[] {_date});
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// удаление всех заказов
+	/**
+	 * Удаляет все заказы
+	 */
 	void orderDeleteAll() {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_ORDERS, null, null);
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_ORDERS, null, null);
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// получение количества заказов
+	/**
+	 * Возвращает общее количество заказов
+	 * 
+	 * @return
+	 *     int кол-во заказов
+	 */
 	int orderGetCount() {
 		int result = 0;
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.rawQuery("SELECT COUNT(DISTINCT " + ORDERS_DATE_NAME + ") FROM " + DB_TABLE_ORDERS, new String[] {});
+			Cursor c = mDb.rawQuery("SELECT COUNT(DISTINCT " + ORDERS_DATE_NAME + ") " +
+					"FROM " + DB_TABLE_ORDERS, new String[] {});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
-			db.setTransactionSuccessful();
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
 	//-----------------------------------------------------
-	// получение количества заказанных блюд на определённую дату
+	/**
+	 * Возвращает количество заказанных блюд на определенную дату
+	 * 
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @return
+	 *     int кол-во заказанных блюд
+	 */
 	int orderGetCountAtDate(String _date) {
 		int result = 0;
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.rawQuery("SELECT COUNT(" + ORDERS_DISH_ID_NAME + ") FROM " + DB_TABLE_ORDERS + " WHERE " + ORDERS_DATE_NAME + " = ?", new String[] {_date});
+			Cursor c = mDb.rawQuery("SELECT COUNT(" + ORDERS_DISH_ID_NAME + ") " +
+					"FROM " + DB_TABLE_ORDERS + " WHERE " + ORDERS_DATE_NAME + " = ?", 
+					new String[] {_date});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
-			db.setTransactionSuccessful();
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
 	//-----------------------------------------------------
-	// получение заказанных на определённую дату блюд
-	ArrayList<Dish> ordersGetListAtDate(String _date) {
+	/**
+	 * Возвращает объекты {@link Dish} заказов на определенную дату
+	 * @param _date
+	 *     дата в формате YYYY-MM-DD
+	 * @return
+	 *     {@link ArrayList} из объектов {@link Dish}
+	 */
+	ArrayList<Dish> orderGetListAtDate(String _date) {
 		ArrayList<Dish> result = new ArrayList<Dish>();
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.query(false, DB_TABLE_ORDERS + " AS OS INNER JOIN " + DB_TABLE_DISHES + " AS DS ON OS." + ORDERS_DISH_ID_NAME + " = DS." + KEY_ID + 
-					" INNER JOIN " + DB_TABLE_MENU + " AS MU ON OS." + ORDERS_DISH_ID_NAME + " = MU." +  MENU_DISH_ID_NAME + " AND OS." + ORDERS_DATE_NAME + " = MU." + MENU_DATE_NAME,
-					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
+			Cursor c = mDb.query(false, DB_TABLE_ORDERS + " AS OS INNER JOIN " + DB_TABLE_DISHES + 
+					" AS DS ON OS." + ORDERS_DISH_ID_NAME + " = DS." + KEY_ID + 
+					" INNER JOIN " + DB_TABLE_MENU + " AS MU ON OS." + ORDERS_DISH_ID_NAME + 
+					" = MU." +  MENU_DISH_ID_NAME + " AND OS." + ORDERS_DATE_NAME + " = MU." 
+					+ MENU_DATE_NAME,
+					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, 
+					DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, 
+					MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
 					"OS." + ORDERS_DATE_NAME + " = ?", new String[] {_date}, null, null, null, null);
-			db.setTransactionSuccessful();
+			mDb.setTransactionSuccessful();
 			if (c.moveToFirst()) {
 				do {
 					Dish dish = new Dish();
@@ -473,7 +682,7 @@ public class EateryDBAdapter {
 				c.close();
 			}
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
@@ -481,16 +690,18 @@ public class EateryDBAdapter {
 	
 	
 	//-----------------------------------------------------
-	// удалить все данные по блюдам, меню и заказам
+	/**
+	 * Удаляет все данные по блюдам, меню и заказам
+	 */
 	void deleteAll() {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_DISHES, null, null);
-			db.delete(DB_TABLE_MENU, null, null);
-			db.delete(DB_TABLE_ORDERS, null, null);
-			db.setTransactionSuccessful();
+			mDb.delete(DB_TABLE_DISHES, null, null);
+			mDb.delete(DB_TABLE_MENU, null, null);
+			mDb.delete(DB_TABLE_ORDERS, null, null);
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
@@ -499,38 +710,55 @@ public class EateryDBAdapter {
 	//-----------------------------------------------------
 	// НАСТРОЙКИ
 	//-----------------------------------------------------
-	// сохранение настроек
+	/**
+	 * Сохраняет настройки
+	 * 
+	 * @param _server
+	 *     адрес сервера
+	 * @param _login
+	 *     логин
+	 * @param _password
+	 *     пароль
+	 * @param _mode
+	 *     режим работы
+	 */
 	void settingsSave(String _server, String _login, String _password, String _mode) {
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			db.delete(DB_TABLE_SETTINGS, null, null);
+			mDb.delete(DB_TABLE_SETTINGS, null, null);
 			ContentValues data = new ContentValues();
 			data.put(SETTINGS_SERVER_NAME, _server);
 			data.put(SETTINGS_LOGIN_NAME, _login);
 			data.put(SETTINGS_PASSWORD_NAME, _password);
 			data.put(SETTINGS_MODE_NAME, _mode);
-			db.insert(DB_TABLE_SETTINGS, null, data);
-			db.setTransactionSuccessful();
+			mDb.insert(DB_TABLE_SETTINGS, null, data);
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 	}
 	//-----------------------------------------------------
-	// получение настроек
+	/**
+	 * Возвращает настройки
+	 * 
+	 * @return
+	 *     {@link ArrayList} из {@link String} с настройками:
+	 *     адрес сервера, логин, пароль, режим работы
+	 */
 	ArrayList<String> settingsGet() {
 		ArrayList<String> result = new ArrayList<String>();
-		db.beginTransaction();
+		mDb.beginTransaction();
 		try {
-			Cursor c = db.query(false, DB_TABLE_SETTINGS, null, null, null, null, null, null, null);
+			Cursor c = mDb.query(false, DB_TABLE_SETTINGS, null, null, null, null, null, null, null);
 			c.moveToFirst();
 			result.add(c.getString(1));
 			result.add(c.getString(2));
 			result.add(c.getString(3));
 			result.add(c.getString(4));
 			c.close();
-			db.setTransactionSuccessful();
+			mDb.setTransactionSuccessful();
 		} finally {
-			db.endTransaction();
+			mDb.endTransaction();
 		}
 		return result;
 	}
