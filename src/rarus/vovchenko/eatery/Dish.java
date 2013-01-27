@@ -7,61 +7,61 @@ package rarus.vovchenko.eatery;
  *
  */
 public class Dish {
-	private int _id;
-	private String name;
-	private String description;
-	private boolean portioned;
-	private float price;
-	private String rating;
-	private float available_ammount;
-	private float ordered_ammount;
+	private int mId;
+	private String mName;
+	private String mDescription;
+	private boolean mPortioned;
+	private float mPrice;
+	private String mRating;
+	private float mAvailableAmmount;
+	private float mOrderedAmmount;
 	
-	public int get_id() {
-		return _id;
+	public int getId() {
+		return mId;
 	}
-	public void set_id(int _id) {
-		this._id = _id;
+	public void setId(int mId) {
+		this.mId = mId;
 	}
 	public String getName() {
-		return name;
+		return mName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String mName) {
+		this.mName = mName;
 	}
 	public String getDescription() {
-		return description;
+		return mDescription;
 	}
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDescription(String mDescription) {
+		this.mDescription = mDescription;
 	}
 	public boolean isPortioned() {
-		return portioned;
+		return mPortioned;
 	}
-	public void setPortioned(boolean portioned) {
-		this.portioned = portioned;
+	public void setPortioned(boolean mPortioned) {
+		this.mPortioned = mPortioned;
 	}
 	public float getPrice() {
-		return price;
+		return mPrice;
 	}
-	public void setPrice(float price) {
-		this.price = price;
+	public void setPrice(float mPrice) {
+		this.mPrice = mPrice;
 	}
 	public String getRating() {
-		return rating;
+		return mRating;
 	}
-	public void setRating(String rating) {
-		this.rating = rating;
+	public void setRating(String mRating) {
+		this.mRating = mRating;
 	}
-	public float getAvailable_ammount() {
-		return available_ammount;
+	public float getAvailableAmmount() {
+		return mAvailableAmmount;
 	}
-	public void setAvailable_ammount(float availbale_ammount) {
-		this.available_ammount = availbale_ammount;
+	public void setAvailableAmmount(float mAvailableAmmount) {
+		this.mAvailableAmmount = mAvailableAmmount;
 	}
-	public float getOrdered_ammount() {
-		return ordered_ammount;
+	public float getOrderedAmmount() {
+		return mOrderedAmmount;
 	}
-	public void setOrdered_ammount(float ordered_ammount) {
-		this.ordered_ammount = ordered_ammount;
-	}
+	public void setOrderedAmmount(float mOrderedAmmount) {
+		this.mOrderedAmmount = mOrderedAmmount;
+	}	
 }
