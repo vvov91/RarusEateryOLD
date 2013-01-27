@@ -29,94 +29,32 @@ public class EateryDBAdapter {
     private static final String DB_TABLE_ORDERS = "ordersTable";
     private static final String DB_TABLE_SETTINGS = "settingsTable";
 
-    /**
-     * Название столбца "_id" во всех таблицах. Индекс (ключ).
-     */
-    public static final String KEY_ID = "_id";
-
-    //-----------------------------------------------------
     // имя каждого столбца в БД
+    public static final String KEY_ID = "_id";
+    
     // таблица DISHES
-    /**
-     * Название столбца "название" в таблице "Блюда"
-     */
     public static final String DISHES_NAME_NAME = "name";
-    
-    /**
-     * Название столбца "описание" в таблице "Блюда"
-     */
     public static final String DISHES_DESCRIPTION_NAME = "description";
-
-    /**
-     * Название столбца "порционность" в таблице "Блюда"
-     */
     public static final String DISHES_PORTIONED_NAME = "portioned";
-
-    /**
-     * Название столбца "цена" в таблице "Блюда"
-     */
     public static final String DISHES_PRICE_NAME = "price";
-
-    /**
-     * Название столбца "рейтинг" в таблице "Блюда"
-     */
     public static final String DISHES_RATING_NAME = "rating";
-    //-----------------------------------------------------
+
     // таблица MENU
-    /**
-     * Название столбца "дата" в таблице "Меню"
-     */
     public static final String MENU_DATE_NAME = "date";
-
-    /**
-     * Название столбца "id блюда" в таблице "Меню"
-     */
     public static final String MENU_DISH_ID_NAME = "dish_id";
-
-    /**
-     * Название столбца "доступный для заказа объём" в таблице "Меню"
-     */
     public static final String MENU_AVALAM_NAME = "available_ammount";	
-
-    /**
-     * Название столбца "объём заказанного" в таблице "Меню"
-     */
     public static final String MENU_ORDERAM_NAME = "ordered_ammount";
-    //-----------------------------------------------------
+
     // таблица ORDERS
-    /**
-     * Название столбца "дата" в таблице "Заказы"
-     */
     public static final String ORDERS_DATE_NAME = "date";
-
-    /**
-     * Название столбца "id блюда" в таблице "Заказы"
-     */
     public static final String ORDERS_DISH_ID_NAME = "dish_id";
-    //-----------------------------------------------------
+
     // таблица SETTINGS
-    /**
-     * Название столбца "адрес сервера" в таблице "Настройки"
-     */
     public static final String SETTINGS_SERVER_NAME = "server";
-
-    /**
-     * Название столбца "логин" в таблице "Настройки"
-     */
     public static final String SETTINGS_LOGIN_NAME = "login";
-
-    /**
-     * Название столбца "пароль" в таблице "Настройки"
-     */
     public static final String SETTINGS_PASSWORD_NAME = "password";
-    
-    /**
-     * Название столбца "режим работы" в таблице "Настройки"
-     */
     public static final String SETTINGS_MODE_NAME = "mode";
-    //-----------------------------------------------------
 
-    //-----------------------------------------------------
     // запросы для создания таблиц
     // DISHES
     private static final String DB_CREATE_DISHES = "CREATE TABLE " +
@@ -126,7 +64,7 @@ public class EateryDBAdapter {
         DISHES_PORTIONED_NAME + " INT DEFAULT 0, " +
         DISHES_PRICE_NAME + " FLOAT NOT NULL, " +
         DISHES_RATING_NAME + " TEXT DEFAULT 0);";
-    //-----------------------------------------------------
+
     // MENU
     private static final String DB_CREATE_MENU = "CREATE TABLE " +
         DB_TABLE_MENU + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -134,13 +72,13 @@ public class EateryDBAdapter {
         MENU_DISH_ID_NAME + " INTEGER NOT NULL, " +
         MENU_AVALAM_NAME + " FLOAT NOT NULL DEFAULT -1, " +
         MENU_ORDERAM_NAME + " FLOAT NOT NULL DEFAULT 0);";
-    //-----------------------------------------------------
+
     // ORDERS
     private static final String DB_CREATE_ORDERS = "CREATE TABLE " +
         DB_TABLE_ORDERS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
         ORDERS_DATE_NAME + " DATE NOT NULL, " +
         ORDERS_DISH_ID_NAME + " INTEGER NOT NULL);";
-    //-----------------------------------------------------
+
     // SETTINGS
     private static final String DB_CREATE_SETTINGS = "CREATE TABLE " +
         DB_TABLE_SETTINGS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -148,7 +86,6 @@ public class EateryDBAdapter {
         SETTINGS_LOGIN_NAME + " TEXT NOT NULL, " +
         SETTINGS_PASSWORD_NAME + " TEXT NOT NULL, " +
         SETTINGS_MODE_NAME + " TEXT NOT NULL DEFAULT online);";
-	//-----------------------------------------------------
 	
 	// экземпляр БД
 	private SQLiteDatabase mDb;
@@ -158,8 +95,7 @@ public class EateryDBAdapter {
 	
 	// объект вспомогательного класса для работы с БД 
 	private DBHelper mDbHelper;
-		
-	//-----------------------------------------------------
+
     /**
 	 * Конструктор класса
 	 * 
@@ -170,9 +106,7 @@ public class EateryDBAdapter {
 		this.context = _context;
 		mDbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
 	}
-	//-----------------------------------------------------
-	
-	//-----------------------------------------------------
+
 	/**
 	 * Открывает соединение с БД.
 	 * Если открыть базу в режиме записи невозможно, база открывается в режиме чтения.
@@ -187,16 +121,14 @@ public class EateryDBAdapter {
 			mDb = mDbHelper.getReadableDatabase();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Закрывает соединение с БД
 	 */
 	public void close() {
 		mDb.close();
 	}	
-	//-----------------------------------------------------
-	
-	//-----------------------------------------------------
+
 	/**
 	 * Реализует методы открытия и обновления БД
 	 */
@@ -217,7 +149,7 @@ public class EateryDBAdapter {
 				int version) {
 			super(context, name, factory, version);
 		}
-		//----------------------------------------------------
+
 		// в случае если БД ещё не создана
 		@Override
 		public void onCreate(SQLiteDatabase _db) {
@@ -227,7 +159,7 @@ public class EateryDBAdapter {
 			_db.execSQL(DB_CREATE_ORDERS);
 			_db.execSQL(DB_CREATE_SETTINGS);
 		}
-		//-----------------------------------------------------
+
 		// в случае если существующая БД не соответствует необходимой версии
 		// и нуждается в обновлении
 		@Override
@@ -236,14 +168,11 @@ public class EateryDBAdapter {
 			// в обновлении пока не нуждается
 			// TODO: Реализовать процесс обновления БД в случае перехода к новой версии 
 		}		
-		//-----------------------------------------------------
 	}
-	//-----------------------------------------------------
+
 	
-	
-	//-----------------------------------------------------
 	// БЛЮДА
-	//-----------------------------------------------------
+
 	/**
 	 * Добавляет блюдо
 	 * 
@@ -273,7 +202,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}	
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет блюдо
 	 * 
@@ -289,7 +218,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет все блюда
 	 */
@@ -302,7 +231,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	// изменение рейтинга блюда
 	/**
 	 * Изменяет рейтинг блюда
@@ -324,12 +253,10 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	
-	
-	//-----------------------------------------------------
 	// МЕНЮ
-	//-----------------------------------------------------
+
 	/**
 	 * Добавляет элемент в меню
 	 * 
@@ -356,7 +283,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет элемент меню
 	 * 
@@ -375,7 +302,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет все меню
 	 */
@@ -388,7 +315,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет меню на определенную дату
 	 * 
@@ -404,7 +331,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}  
-	//-----------------------------------------------------
+
 	/**
 	 * Возвращает массив строк с датами на которые доступно меню
 	 * 
@@ -430,7 +357,7 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Вовзращает количество дат на которые доступно меню
 	 * 
@@ -452,7 +379,7 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Возвращает объекты {@link Dish} меню на определенную дату
 	 * 
@@ -492,7 +419,7 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Возвращает количество блюд в меню на определенную дату
 	 * 
@@ -516,12 +443,10 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
+
 	
-	
-	//-----------------------------------------------------
 	// ЗАКАЗЫ
-	//-----------------------------------------------------
+
 	/**
 	 * Добавляет заказ
 	 * 
@@ -549,7 +474,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет заказ на определенную дату
 	 * 
@@ -568,7 +493,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет все заказы на определенную дату
 	 * 
@@ -584,7 +509,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Удаляет все заказы
 	 */
@@ -597,7 +522,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Возвращает общее количество заказов
 	 * 
@@ -619,7 +544,7 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Возвращает количество заказанных блюд на определенную дату
 	 * 
@@ -644,7 +569,7 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Возвращает объекты {@link Dish} заказов на определенную дату
 	 * @param _date
@@ -686,10 +611,8 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
+
 	
-	
-	//-----------------------------------------------------
 	/**
 	 * Удаляет все данные по блюдам, меню и заказам
 	 */
@@ -704,12 +627,10 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	
-	
-	//-----------------------------------------------------
 	// НАСТРОЙКИ
-	//-----------------------------------------------------
+
 	/**
 	 * Сохраняет настройки
 	 * 
@@ -737,7 +658,7 @@ public class EateryDBAdapter {
 			mDb.endTransaction();
 		}
 	}
-	//-----------------------------------------------------
+
 	/**
 	 * Возвращает настройки
 	 * 
@@ -762,5 +683,4 @@ public class EateryDBAdapter {
 		}
 		return result;
 	}
-	//-----------------------------------------------------
 }
