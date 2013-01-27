@@ -9,7 +9,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 /**
  * Предоставляет интерфейс для работы с БД
@@ -17,7 +16,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
  * @author Victor Vovchenko <v.vovchenko91@gmail.com>
  *
  */
-public class EateryDBAdapter {
+public class EateryDBAdapter extends SQLiteOpenHelper {
     // файл БД
     private static final String DB_NAME = "Eatery.db";
     // версия БД
@@ -89,13 +88,7 @@ public class EateryDBAdapter {
 	
 	// экземпляр БД
 	private SQLiteDatabase mDb;
-	
-	// объект Context приложения, которое использует БД
-	private final Context context;
-	
-	// объект вспомогательного класса для работы с БД 
-	private DBHelper mDbHelper;
-
+		
     /**
 	 * Конструктор класса
 	 * 
@@ -103,8 +96,7 @@ public class EateryDBAdapter {
 	 *     текущий {@link Context}
 	 */
 	public EateryDBAdapter(Context _context) {
-		this.context = _context;
-		mDbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
+		super(_context, DB_NAME, null, DB_VERSION);
 	}
 
 	/**
@@ -116,9 +108,9 @@ public class EateryDBAdapter {
 	 */
 	public void open() throws SQLException {
 		try {
-			mDb = mDbHelper.getWritableDatabase();
+			mDb = this.getWritableDatabase();
 		} catch (SQLiteException ex) {
-			mDb = mDbHelper.getReadableDatabase();
+			mDb = this.getReadableDatabase();
 		}
 	}
 
@@ -129,47 +121,25 @@ public class EateryDBAdapter {
 		mDb.close();
 	}	
 
-	/**
-	 * Реализует методы открытия и обновления БД
-	 */
-	private static class DBHelper extends SQLiteOpenHelper {
-		/**
-		 * Конструктор класса
-		 * 
-		 * @param context
-		 *     текущий {@link Context}
-		 * @param name
-		 *     имя файла БД
-		 * @param factory
-		 *     фабрика курсоров
-		 * @param version
-		 *     версия БД
-		 */
-		public DBHelper(Context context, String name, CursorFactory factory,
-				int version) {
-			super(context, name, factory, version);
-		}
-
-		// в случае если БД ещё не создана
-		@Override
-		public void onCreate(SQLiteDatabase _db) {
-			// создаём необходимые таблицы
-			_db.execSQL(DB_CREATE_DISHES);
-			_db.execSQL(DB_CREATE_MENU);
-			_db.execSQL(DB_CREATE_ORDERS);
-			_db.execSQL(DB_CREATE_SETTINGS);
-		}
-
-		// в случае если существующая БД не соответствует необходимой версии
-		// и нуждается в обновлении
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			// БД у нас пока в разработке
-			// в обновлении пока не нуждается
-			// TODO: Реализовать процесс обновления БД в случае перехода к новой версии 
-		}		
+	// в случае если БД ещё не создана
+	@Override
+	public void onCreate(SQLiteDatabase _db) {
+		// создаём необходимые таблицы
+		_db.execSQL(DB_CREATE_DISHES);
+		_db.execSQL(DB_CREATE_MENU);
+		_db.execSQL(DB_CREATE_ORDERS);
+		_db.execSQL(DB_CREATE_SETTINGS);
 	}
 
+	// в случае если существующая БД не соответствует необходимой версии
+	// и нуждается в обновлении
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		// БД у нас пока в разработке
+		// в обновлении пока не нуждается
+		// TODO: Реализовать процесс обновления БД в случае перехода к новой версии 
+	}		
+	
 	
 	// БЛЮДА
 
