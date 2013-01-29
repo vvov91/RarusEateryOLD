@@ -16,7 +16,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @author Victor Vovchenko <v.vovchenko91@gmail.com>
  *
  */
-public class EateryDBAdapter extends SQLiteOpenHelper {
+public class EateryDBManager extends SQLiteOpenHelper {
     // файл БД
     private static final String DB_NAME = "Eatery.db";
     // версия БД
@@ -95,7 +95,7 @@ public class EateryDBAdapter extends SQLiteOpenHelper {
 	 * @param _context
 	 *     текущий {@link Context}
 	 */
-	public EateryDBAdapter(Context _context) {
+	public EateryDBManager(Context _context) {
 		super(_context, DB_NAME, null, DB_VERSION);
 	}
 

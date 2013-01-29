@@ -7,7 +7,7 @@ import android.view.Menu;
 
 public class MainActivity extends Activity {
 	// адаптер для работы с БД
-	EateryDBAdapter db;
+	EateryDBManager db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         
         // экземпляр адаптора для работы с БД
-        db = new EateryDBAdapter(this);
+        db = new EateryDBManager(this);
         db.open();
         
         /*class myTask extends AsyncTask {
