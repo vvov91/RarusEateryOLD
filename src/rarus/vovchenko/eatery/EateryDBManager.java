@@ -1,6 +1,7 @@
 package rarus.vovchenko.eatery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -54,38 +55,6 @@ public class EateryDBManager extends SQLiteOpenHelper {
     public static final String SETTINGS_PASSWORD_NAME = "password";
     public static final String SETTINGS_MODE_NAME = "mode";
 
-    // запросы для создания таблиц
-    // DISHES
-    private static final String DB_CREATE_DISHES = "CREATE TABLE " +
-        DB_TABLE_DISHES + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        DISHES_NAME_NAME + " TEXT NOT NULL, " +
-        DISHES_DESCRIPTION_NAME + " TEXT NOT NULL, " +
-        DISHES_PORTIONED_NAME + " INT DEFAULT 0, " +
-        DISHES_PRICE_NAME + " FLOAT NOT NULL, " +
-        DISHES_RATING_NAME + " TEXT DEFAULT 0);";
-
-    // MENU
-    private static final String DB_CREATE_MENU = "CREATE TABLE " +
-        DB_TABLE_MENU + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        MENU_DATE_NAME + " DATE NOT NULL, " +
-        MENU_DISH_ID_NAME + " INTEGER NOT NULL, " +
-        MENU_AVALAM_NAME + " FLOAT NOT NULL DEFAULT -1, " +
-        MENU_ORDERAM_NAME + " FLOAT NOT NULL DEFAULT 0);";
-
-    // ORDERS
-    private static final String DB_CREATE_ORDERS = "CREATE TABLE " +
-        DB_TABLE_ORDERS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        ORDERS_DATE_NAME + " DATE NOT NULL, " +
-        ORDERS_DISH_ID_NAME + " INTEGER NOT NULL);";
-
-    // SETTINGS
-    private static final String DB_CREATE_SETTINGS = "CREATE TABLE " +
-        DB_TABLE_SETTINGS + " (" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        SETTINGS_SERVER_NAME + " TEXT NOT NULL, " +
-        SETTINGS_LOGIN_NAME + " TEXT NOT NULL, " +
-        SETTINGS_PASSWORD_NAME + " TEXT NOT NULL, " +
-        SETTINGS_MODE_NAME + " TEXT NOT NULL DEFAULT online);";
-	
 	// экземпляр БД
 	private SQLiteDatabase mDb;
 		
@@ -124,11 +93,49 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	// в случае если БД ещё не создана
 	@Override
 	public void onCreate(SQLiteDatabase _db) {
+		StringBuilder query = new StringBuilder();
+		
 		// создаём необходимые таблицы
-		_db.execSQL(DB_CREATE_DISHES);
-		_db.execSQL(DB_CREATE_MENU);
-		_db.execSQL(DB_CREATE_ORDERS);
-		_db.execSQL(DB_CREATE_SETTINGS);
+	    // DISHES
+		query.append("CREATE TABLE ");
+		query.append(DB_TABLE_DISHES).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		query.append(DISHES_NAME_NAME).append(" TEXT NOT NULL, ");
+		query.append(DISHES_DESCRIPTION_NAME).append(" TEXT NOT NULL, ");
+		query.append(DISHES_PORTIONED_NAME).append(" INT DEFAULT 0, ");
+		query.append(DISHES_PRICE_NAME).append(" FLOAT NOT NULL, ");
+		query.append(DISHES_RATING_NAME).append(" TEXT DEFAULT 0);");		
+		_db.execSQL(query.toString());
+		
+		query = new StringBuilder();
+		
+		// MENU		
+		query.append("CREATE TABLE ");
+		query.append(DB_TABLE_MENU).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		query.append(MENU_DATE_NAME).append(" DATE NOT NULL, ");
+		query.append(MENU_DISH_ID_NAME).append(" INTEGER NOT NULL, ");
+		query.append(MENU_AVALAM_NAME).append(" FLOAT NOT NULL DEFAULT -1, ");
+		query.append(MENU_ORDERAM_NAME).append(" FLOAT NOT NULL DEFAULT 0);");
+		_db.execSQL(query.toString());
+		
+		query = new StringBuilder();
+		
+		// ORDERS
+		query.append("CREATE TABLE ");
+		query.append(DB_TABLE_ORDERS).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		query.append(ORDERS_DATE_NAME).append(" DATE NOT NULL, ");
+		query.append(ORDERS_DISH_ID_NAME).append(" INTEGER NOT NULL);");
+		_db.execSQL(query.toString());
+		
+		query = new StringBuilder();
+		
+		// SETTINGS
+		query.append("CREATE TABLE ");
+		query.append(DB_TABLE_SETTINGS).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		query.append(SETTINGS_SERVER_NAME).append(" TEXT NOT NULL, ");
+		query.append(SETTINGS_LOGIN_NAME).append(" TEXT NOT NULL, ");
+		query.append(SETTINGS_PASSWORD_NAME).append(" TEXT NOT NULL, ");
+		query.append(SETTINGS_MODE_NAME).append(" TEXT NOT NULL DEFAULT online);");
+		_db.execSQL(query.toString());
 	}
 
 	// в случае если существующая БД не соответствует необходимой версии
@@ -157,7 +164,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param rating
 	 *     рейтинг
 	 */
-	void addDish(String name, String description, boolean portioned, float price, String rating) {
+	public void addDish(String name, String description, boolean portioned, float price, String rating) {
 		mDb.beginTransaction();
 		try {
 			ContentValues data = new ContentValues();
@@ -179,7 +186,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param id
 	 *    id блюда
 	 */
-	void deleteDish(int id) {
+	public void deleteDish(int id) {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_DISHES, KEY_ID + " = " + id, null);	    
@@ -192,7 +199,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	/**
 	 * Удаляет все блюда
 	 */
-	void deleteAllDish() {
+	public void deleteAllDish() {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_DISHES, null, null);	    
@@ -211,13 +218,12 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param rating
 	 *     рейтинг
 	 */
-	void setDishRating(int id, String rating) {
+	public void setDishRating(int id, String rating) {
 		mDb.beginTransaction();
 		try {
 			ContentValues data = new ContentValues();
 			data.put(DISHES_RATING_NAME, rating);
-			mDb.update(DB_TABLE_DISHES, data, KEY_ID + " = ?",
-					new String[] {Integer.toString(id)});	    
+			mDb.update(DB_TABLE_DISHES, data, KEY_ID + " = ?", new String[] {Integer.toString(id)});	    
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
@@ -239,7 +245,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param orderedAmmount
 	 *     заказанный объём
 	 */
-	void addMenu(String date, int dishId, float availbaleAmmount, float orderedAmmount) {
+	public void addMenu(String date, int dishId, float availbaleAmmount, float orderedAmmount) {
 		mDb.beginTransaction();
 		try {
 			ContentValues data = new ContentValues();
@@ -262,10 +268,12 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param dishId
 	 *     id блюда
 	 */
-	void deleteMenu(String date, int dishId) {
+	public void deleteMenu(String date, int dishId) {
 		mDb.beginTransaction();
 		try {
-			mDb.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ? AND " + MENU_DISH_ID_NAME + " = ?",
+			StringBuilder query = new StringBuilder();
+			query.append(MENU_DATE_NAME).append(" = ? AND ").append(MENU_DISH_ID_NAME).append(" = ?");
+			mDb.delete(DB_TABLE_MENU, query.toString(),
 					new String[] {date, Integer.toString(dishId)});
 			mDb.setTransactionSuccessful();
 		} finally {
@@ -276,7 +284,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	/**
 	 * Удаляет все меню
 	 */
-	void deleteAllMenu() {
+	public void deleteAllMenu() {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_MENU, null, null);
@@ -292,7 +300,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param date
 	 *     дата в формате YYYY-MM-DD
 	 */
-	void deleteMenuAtDate(String date) {
+	public void deleteMenuAtDate(String date) {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ?", new String[] {date});
@@ -306,11 +314,11 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Возвращает массив строк с датами на которые доступно меню
 	 * 
 	 * @return
-	 *     {@link ArrayList} из {@link String} дат.
+	 *     {@link List} из {@link String} дат.
 	 *     Даты в формате YYYY-MM-DD. Отсортированы по возрастанию.
 	 */
-	ArrayList<String> getMenuDates() {
-		ArrayList<String> result = new ArrayList<String>();
+	public List<String> getMenuDates() {
+		List<String> result = new ArrayList<String>();
 		mDb.beginTransaction();
 		try {
 			Cursor c = mDb.query(true, DB_TABLE_MENU, new String[] {MENU_DATE_NAME}, null, null, 
@@ -334,12 +342,14 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @return
 	 *     int с кол-вом дат
 	 */
-	int getMenuDatesCount() {
+	public int getMenuDatesCount() {
 		int result = 0;
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.rawQuery("SELECT COUNT(DISTINCT " + MENU_DATE_NAME + ") " +
-					"FROM " + DB_TABLE_MENU, new String[] {});
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT COUNT(DISTINCT ").append(MENU_DATE_NAME).append(") ");
+			query.append("FROM ").append(DB_TABLE_MENU);
+			Cursor c = mDb.rawQuery(query.toString(), new String[] {});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
@@ -356,14 +366,16 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param date
 	 *     дата в формате YYYY-MM-DD
 	 * @return
-	 *     {@link ArrayList} из объектов {@link Dish}
+	 *     {@link List} из объектов {@link Dish}
 	 */
-	ArrayList<Dish> getMenuListAtDate(String date) {
-		ArrayList<Dish> result = new ArrayList<Dish>();
+	public List<Dish> getMenuListAtDate(String date) {
+		List<Dish> result = new ArrayList<Dish>();
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.query(false, DB_TABLE_MENU + " AS MU INNER JOIN " + DB_TABLE_DISHES +
-					" AS DS ON MU." + MENU_DISH_ID_NAME + " = DS." + KEY_ID,
+			StringBuilder query = new StringBuilder();
+			query.append(DB_TABLE_MENU).append(" AS MU INNER JOIN ").append(DB_TABLE_DISHES);
+			query.append(" AS DS ON MU.").append(MENU_DISH_ID_NAME).append(" = DS.").append(KEY_ID);
+			Cursor c = mDb.query(false, query.toString(),
 					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, 
 					DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, 
 					MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
@@ -398,12 +410,14 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @return
 	 *     int кол-во дат
 	 */
-	int getMenuCountAtDate(String date) {
+	public int getMenuCountAtDate(String date) {
 		int result = 0;
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.rawQuery("SELECT COUNT(" + MENU_DISH_ID_NAME + ") FROM " + 
-					DB_TABLE_MENU + " WHERE " + MENU_DATE_NAME + " = ?", new String[] {date});
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT COUNT(").append(MENU_DISH_ID_NAME).append(") FROM ");
+			query.append(DB_TABLE_MENU).append(" WHERE ").append(MENU_DATE_NAME).append(" = ?");
+			Cursor c = mDb.rawQuery(query.toString(), new String[] {date});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
@@ -427,7 +441,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param orderAmmount
 	 *     объём заказанного
 	 */
-	void addOrder(String date, int dishId, float orderAmmount) {
+	public void addOrder(String date, int dishId, float orderAmmount) {
 		mDb.beginTransaction();
 		try {
 			ContentValues data_orders = new ContentValues();
@@ -437,8 +451,11 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			
 			ContentValues data_menu = new ContentValues();
 			data_menu.put(MENU_ORDERAM_NAME, orderAmmount);
-			mDb.update(DB_TABLE_MENU, data_menu, MENU_DATE_NAME + " = ? AND " +
-					MENU_DISH_ID_NAME + " = ?", new String[] {date, Integer.toString(dishId)});
+			
+			StringBuilder query = new StringBuilder();
+			query.append(MENU_DATE_NAME).append(" = ? AND ").append(MENU_DISH_ID_NAME).append(" = ?");
+			mDb.update(DB_TABLE_MENU, data_menu, query.toString(),
+					new String[] {date, Integer.toString(dishId)});
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
@@ -453,11 +470,12 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param dishId
 	 *     id блюда
 	 */
-	void deleteOrder(String date, int dishId) {
+	public void deleteOrder(String date, int dishId) {
 		mDb.beginTransaction();
 		try {
-			mDb.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ? AND " + 
-					ORDERS_DISH_ID_NAME + " = ?", new String[] {date, Integer.toString(dishId)});
+			StringBuilder query = new StringBuilder();
+			query.append(ORDERS_DATE_NAME).append(" = ? AND ").append(ORDERS_DISH_ID_NAME).append(" = ?");
+			mDb.delete(DB_TABLE_ORDERS, query.toString(), new String[] {date, Integer.toString(dishId)});
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
@@ -470,7 +488,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param date
 	 *     дата в формате YYYY-MM-DD
 	 */
-	void deleteOrderAtDate(String date) {
+	public void deleteOrderAtDate(String date) {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ?", new String[] {date});
@@ -483,7 +501,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	/**
 	 * Удаляет все заказы
 	 */
-	void deleteAllOrder() {
+	public void deleteAllOrder() {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_ORDERS, null, null);
@@ -499,12 +517,14 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @return
 	 *     int кол-во заказов
 	 */
-	int getOrderCount() {
+	public int getOrderCount() {
 		int result = 0;
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.rawQuery("SELECT COUNT(DISTINCT " + ORDERS_DATE_NAME + ") " +
-					"FROM " + DB_TABLE_ORDERS, new String[] {});
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT COUNT(DISTINCT ").append(ORDERS_DATE_NAME).append(") ");
+			query.append("FROM ").append(DB_TABLE_ORDERS);
+			Cursor c = mDb.rawQuery(query.toString(), new String[] {});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
@@ -523,13 +543,14 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @return
 	 *     int кол-во заказанных блюд
 	 */
-	int getOrderCountAtDate(String date) {
+	public int getOrderCountAtDate(String date) {
 		int result = 0;
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.rawQuery("SELECT COUNT(" + ORDERS_DISH_ID_NAME + ") " +
-					"FROM " + DB_TABLE_ORDERS + " WHERE " + ORDERS_DATE_NAME + " = ?", 
-					new String[] {date});
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT COUNT(").append(ORDERS_DISH_ID_NAME).append(") ").append("FROM ");
+			query.append(DB_TABLE_ORDERS).append(" WHERE ").append(ORDERS_DATE_NAME).append(" = ?");
+			Cursor c = mDb.rawQuery(query.toString(), new String[] {date});
 			c.moveToFirst();
 			result = c.getInt(0);
 			c.close();
@@ -545,17 +566,19 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param date
 	 *     дата в формате YYYY-MM-DD
 	 * @return
-	 *     {@link ArrayList} из объектов {@link Dish}
+	 *     {@link List} из объектов {@link Dish}
 	 */
-	ArrayList<Dish> getOrderListAtDate(String date) {
-		ArrayList<Dish> result = new ArrayList<Dish>();
+	public List<Dish> getOrderListAtDate(String date) {
+		List<Dish> result = new ArrayList<Dish>();
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.query(false, DB_TABLE_ORDERS + " AS OS INNER JOIN " + DB_TABLE_DISHES + 
-					" AS DS ON OS." + ORDERS_DISH_ID_NAME + " = DS." + KEY_ID + 
-					" INNER JOIN " + DB_TABLE_MENU + " AS MU ON OS." + ORDERS_DISH_ID_NAME + 
-					" = MU." +  MENU_DISH_ID_NAME + " AND OS." + ORDERS_DATE_NAME + " = MU." 
-					+ MENU_DATE_NAME,
+			StringBuilder query = new StringBuilder();
+			query.append(DB_TABLE_ORDERS).append(" AS OS INNER JOIN ").append(DB_TABLE_DISHES);
+			query.append(" AS DS ON OS.").append(ORDERS_DISH_ID_NAME).append(" = DS.").append(KEY_ID);
+			query.append(" INNER JOIN ").append(DB_TABLE_MENU).append(" AS MU ON OS.");
+			query.append(ORDERS_DISH_ID_NAME).append(" = MU.").append(MENU_DISH_ID_NAME);
+			query.append(" AND OS.").append(ORDERS_DATE_NAME).append(" = MU.").append(MENU_DATE_NAME);
+			Cursor c = mDb.query(false, query.toString(),
 					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, 
 					DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, 
 					MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
@@ -586,7 +609,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	/**
 	 * Удаляет все данные по блюдам, меню и заказам
 	 */
-	void deleteAll() {
+	public void deleteAll() {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_DISHES, null, null);
@@ -613,7 +636,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * @param mode
 	 *     режим работы
 	 */
-	void saveSettings(String server, String login, String password, String mode) {
+	public void saveSettings(String server, String login, String password, String mode) {
 		mDb.beginTransaction();
 		try {
 			mDb.delete(DB_TABLE_SETTINGS, null, null);
@@ -633,11 +656,11 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Возвращает настройки
 	 * 
 	 * @return
-	 *     {@link ArrayList} из {@link String} с настройками:
+	 *     {@link List} из {@link String} с настройками:
 	 *     адрес сервера, логин, пароль, режим работы
 	 */
-	ArrayList<String> getSettings() {
-		ArrayList<String> result = new ArrayList<String>();
+	public List<String> getSettings() {
+		List<String> result = new ArrayList<String>();
 		mDb.beginTransaction();
 		try {
 			Cursor c = mDb.query(false, DB_TABLE_SETTINGS, null, null, null, null, null, null, null);

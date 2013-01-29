@@ -17,7 +17,6 @@ public class MainActivity extends Activity {
         // экземпляр адаптора для работы с БД
         db = new EateryDBManager(this);
         db.open();
-        
         /*class myTask extends AsyncTask {
 
 			@Override
