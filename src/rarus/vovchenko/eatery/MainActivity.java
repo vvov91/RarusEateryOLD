@@ -1,5 +1,6 @@
 package rarus.vovchenko.eatery;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -16,6 +17,20 @@ public class MainActivity extends Activity {
         // экземпляр адаптора для работы с БД
         db = new EateryDBAdapter(this);
         db.open();
+        
+        /*class myTask extends AsyncTask {
+
+			@Override
+			protected Object doInBackground(Object... arg0) {
+				EateryWebService eWS = new EateryWebService();
+		        eWS.getMenu();
+				return null;
+			}
+        	
+        }
+        
+        myTask task = new myTask();
+        task.execute();  */  
     }
 
     @Override
