@@ -10,6 +10,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Предоставляет интерфейс для работы с БД
@@ -18,6 +19,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  *
  */
 public class EateryDBManager extends SQLiteOpenHelper {
+	private final String LOG_TAG = this.getClass().getName();
+	
     // файл БД
     private static final String DB_NAME = "Eatery.db";
     // версия БД
@@ -80,6 +83,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb = this.getWritableDatabase();
 		} catch (SQLiteException ex) {
 			mDb = this.getReadableDatabase();
+			
+			Log.e(LOG_TAG, "Failed to open database in read/write mode. DB is opened in read mode");
 		}
 	}
 
@@ -136,6 +141,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		query.append(SETTINGS_PASSWORD_NAME).append(" TEXT NOT NULL, ");
 		query.append(SETTINGS_MODE_NAME).append(" TEXT NOT NULL DEFAULT online);");
 		_db.execSQL(query.toString());
+		
+		Log.i(LOG_TAG, "Created database");
 	}
 
 	// в случае если существующая БД не соответствует необходимой версии
@@ -206,6 +213,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Deleted all dishes");			
 		}
 	}
 
@@ -291,6 +300,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Deleted all menus");
 		}
 	}
 
@@ -307,6 +318,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Deleted menu, date (" + date + ")");
 		}
 	}  
 
@@ -495,6 +508,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Deleted order, date (" + date + ")");
 		}
 	}
 
@@ -508,6 +523,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Deleted all orders");
 		}
 	}
 
@@ -618,6 +635,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Database cleared");
 		}
 	}
 
@@ -673,6 +692,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Settings updated");
 		}
 		return result;
 	}
