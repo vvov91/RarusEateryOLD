@@ -178,8 +178,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	    data.put(DISHES_PORTIONED_NAME, (portioned ? 1 : 0));
 	    data.put(DISHES_PRICE_NAME, price);
 	    data.put(DISHES_RATING_NAME, rating);
-	    mDb.beginTransaction();
 	    
+	    mDb.beginTransaction();	    
 		try {
 		    mDb.insert(DB_TABLE_DISHES, null, data);		    
 			mDb.setTransactionSuccessful();
