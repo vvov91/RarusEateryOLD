@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils.InsertHelper;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -158,53 +159,6 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	// БЛЮДА
 
 	/**
-	 * Добавляет блюдо
-	 * 
-	 * @param name
-	 *     название
-	 * @param description
-	 *     описание
-	 * @param portioned
-	 *     порционность
-	 * @param price
-	 *     цена
-	 * @param rating
-	 *     рейтинг
-	 */
-	public void addDish(String name, String description, boolean portioned, float price, String rating) {
-		ContentValues data = new ContentValues();
-	    data.put(DISHES_NAME_NAME, name);
-	    data.put(DISHES_DESCRIPTION_NAME, description);
-	    data.put(DISHES_PORTIONED_NAME, (portioned ? 1 : 0));
-	    data.put(DISHES_PRICE_NAME, price);
-	    data.put(DISHES_RATING_NAME, rating);
-	    
-	    mDb.beginTransaction();	    
-		try {
-		    mDb.insert(DB_TABLE_DISHES, null, data);		    
-			mDb.setTransactionSuccessful();
-		} finally {
-			mDb.endTransaction();
-		}
-	}	
-
-	/**
-	 * Удаляет блюдо
-	 * 
-	 * @param id
-	 *    id блюда
-	 */
-	public void deleteDish(int id) {
-		mDb.beginTransaction();
-		try {
-			mDb.delete(DB_TABLE_DISHES, KEY_ID + " = " + id, null);	    
-			mDb.setTransactionSuccessful();
-		} finally {
-			mDb.endTransaction();
-		}
-	}
-
-	/**
 	 * Удаляет все блюда
 	 */
 	public void deleteAllDish() {
@@ -243,57 +197,65 @@ public class EateryDBManager extends SQLiteOpenHelper {
 
 	
 	// МЕНЮ
-
+	
 	/**
-	 * Добавляет элемент в меню
+	 * Добавляет меню
 	 * 
 	 * @param date
 	 *     дата в формате YYYY-MM-DD
-	 * @param dishId
-	 *     id блюда
-	 * @param availbaleAmmount
-	 *     доступный для заказа объём
-	 * @param orderedAmmount
-	 *     заказанный объём
+	 * @param dishes
+	 *     {@link List} из объектов {@link Dish}
 	 */
-	public void addMenu(String date, int dishId, float availbaleAmmount, float orderedAmmount) {
+	public void addMenu(String date, List<Dish> dishes) {
 		ContentValues data = new ContentValues();
-		data.put(MENU_DATE_NAME, date);
-		data.put(MENU_DISH_ID_NAME, dishId);
-		data.put(MENU_AVALAM_NAME, availbaleAmmount);
-		data.put(MENU_ORDERAM_NAME, orderedAmmount);
+		InsertHelper ih = new InsertHelper(mDb, DB_TABLE_MENU);
 		
+		final int muDateI = ih.getColumnIndex(MENU_DATE_NAME);
+		final int muDishIdI = ih.getColumnIndex(MENU_DISH_ID_NAME);
+		final int muAvalamI = ih.getColumnIndex(MENU_AVALAM_NAME);
+		final int muOrderamI = ih.getColumnIndex(MENU_ORDERAM_NAME);
+	
 		mDb.beginTransaction();
 		try {
-			mDb.insert(DB_TABLE_MENU, null, data);
-			mDb.setTransactionSuccessful();
+			for (int i = 0; i < dishes.size(); i++) {
+				Cursor c = mDb.query(false, DB_TABLE_DISHES, new String[] {KEY_ID},
+						DISHES_NAME_NAME + " = ?", new String[] {dishes.get(i).getName()}, null,
+						null, null, null);
+				
+				c.moveToFirst();
+				
+				ih.prepareForInsert();
+				
+				if (c.getCount() > 0) {
+					ih.bind(muDateI, date);
+					ih.bind(muDishIdI, c.getInt(0));
+					ih.bind(muAvalamI, dishes.get(i).getAvailableAmmount());
+					ih.bind(muOrderamI, dishes.get(i).getOrderedAmmount());
+				} else {
+					data.put(DISHES_NAME_NAME, dishes.get(i).getName());
+					data.put(DISHES_DESCRIPTION_NAME, dishes.get(i).getDescription());
+					data.put(DISHES_PORTIONED_NAME, (dishes.get(i).isPortioned() ? 1 : 0));
+					data.put(DISHES_PRICE_NAME, dishes.get(i).getPrice());
+					data.put(DISHES_RATING_NAME, dishes.get(i).getRating());
+			    
+					long rowId = mDb.insert(DB_TABLE_DISHES, null, data);
+
+					ih.bind(muDateI, date);
+					ih.bind(muDishIdI, rowId);
+					ih.bind(muAvalamI, dishes.get(i).getAvailableAmmount());
+					ih.bind(muOrderamI, dishes.get(i).getOrderedAmmount());
+				}
+				c.close();
+				ih.execute();
+			}
+		    mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Added menu on " + date + ". Dishes count: " + dishes.size());
 		}
 	}
-
-	/**
-	 * Удаляет элемент меню
-	 * 
-	 * @param date
-	 *     дата в формате YYYY-MM-DD
-	 * @param dishId
-	 *     id блюда
-	 */
-	public void deleteMenu(String date, int dishId) {
-		StringBuilder query = new StringBuilder();
-		query.append(MENU_DATE_NAME).append(" = ? AND ").append(MENU_DISH_ID_NAME).append(" = ?");
-		
-		mDb.beginTransaction();
-		try {
-			mDb.delete(DB_TABLE_MENU, query.toString(),
-					new String[] {date, Integer.toString(dishId)});
-			mDb.setTransactionSuccessful();
-		} finally {
-			mDb.endTransaction();
-		}
-	}
-
+	
 	/**
 	 * Удаляет все меню
 	 */
@@ -383,7 +345,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * Возвращает объекты {@link Dish} меню на определенную дату
+	 * Возвращает меню на определенную дату
 	 * 
 	 * @param date
 	 *     дата в формате YYYY-MM-DD
@@ -458,37 +420,36 @@ public class EateryDBManager extends SQLiteOpenHelper {
 
 	
 	// ЗАКАЗЫ
-
+	
 	/**
 	 * Добавляет заказ
 	 * 
 	 * @param date
 	 *     дата в формате YYYY-MM-DD
-	 * @param dishId
-	 *     id блюда
-	 * @param orderAmmount
-	 *     объём заказанного
+	 * @param dishes
+	 *     {@link List} из объектов {@link Dish}
 	 */
-	public void addOrder(String date, int dishId, float orderAmmount) {
-		ContentValues data_orders = new ContentValues();
-		data_orders.put(ORDERS_DATE_NAME, date);
-		data_orders.put(ORDERS_DISH_ID_NAME, dishId);
+	public void addOrder(String date, List<Dish> dishes) {
+		InsertHelper ih = new InsertHelper(mDb, DB_TABLE_ORDERS);
 		
-		ContentValues data_menu = new ContentValues();
-		data_menu.put(MENU_ORDERAM_NAME, orderAmmount);
+		final int orDateI = ih.getColumnIndex(ORDERS_DATE_NAME);
+		final int orDishIdI = ih.getColumnIndex(ORDERS_DISH_ID_NAME);
 		
-		StringBuilder query = new StringBuilder();
-		query.append(MENU_DATE_NAME).append(" = ? AND ").append(MENU_DISH_ID_NAME).append(" = ?");
+		this.deleteOrderAtDate(date);
 		
 		mDb.beginTransaction();
 		try {
-			mDb.insert(DB_TABLE_ORDERS, null, data_orders);
-			
-			mDb.update(DB_TABLE_MENU, data_menu, query.toString(),
-					new String[] {date, Integer.toString(dishId)});
-			mDb.setTransactionSuccessful();
+			for (int i = 0; i < dishes.size(); i++) {
+				ih.prepareForInsert();
+				ih.bind(orDateI, date);
+				ih.bind(orDishIdI, dishes.get(i).getId());
+				ih.execute();
+			}
+		    mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Added order on " + date + ". Dishes count: " + dishes.size());
 		}
 	}
 
@@ -527,7 +488,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		} finally {
 			mDb.endTransaction();
 			
-			Log.i(LOG_TAG, "Deleted order, date (" + date + ")");
+			Log.i(LOG_TAG, "Deleted order on " + date);
 		}
 	}
 
