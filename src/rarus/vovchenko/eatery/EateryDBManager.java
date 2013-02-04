@@ -657,6 +657,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
+			
+			Log.i(LOG_TAG, "Settings updated");
 		}
 	}
 
@@ -683,8 +685,6 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			c.close();
 		} finally {
 			mDb.endTransaction();
-			
-			Log.i(LOG_TAG, "Settings updated");
 		}
 		return result;
 	}
