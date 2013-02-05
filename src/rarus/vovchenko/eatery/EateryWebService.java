@@ -16,16 +16,16 @@ public class EateryWebService extends Service {
 	private final String LOG_TAG = this.getClass().getName();
 	
 	// адрес web-сервиса
-	private static String S_ADDRESS;
+	private static final String S_ADDRESS = "http://178.219.241.102:8090/DiningRoomTest_kuev/ws/mobileEda";
 	
 	// логин
-	private static String S_LOGIN;
+	private static final String S_LOGIN = "mobile";
 	
 	// пароль
-	private static String S_PASSWORD;
+	private static final String S_PASSWORD = "mobile";
 	
 	// режим работы
-	private static String MODE;
+	private static final String MODE = "offline";
 	
 	// экземпляр менеджера БД 
 	private final EateryDBManager db  = new EateryDBManager(this);
@@ -42,25 +42,11 @@ public class EateryWebService extends Service {
 	}
 	
 	
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		// загрузка настроек из БД
-		loadSettings();
-		
+	public int onStartCommand(Intent intent, int flags, int startId) {		
 		// получение меню с сервера
 		getMenu();
 		
 		return super.onStartCommand(intent, flags, startId);	
-	}
-	
-	void loadSettings() {
-		db.open();
-		List<String> settings = db.getSettings();
-		db.close();
-		
-		S_ADDRESS = settings.get(0);
-		S_LOGIN = settings.get(1);
-		S_PASSWORD = settings.get(2);
-		MODE = settings.get(3);
 	}
 	
 	void getMenu() {

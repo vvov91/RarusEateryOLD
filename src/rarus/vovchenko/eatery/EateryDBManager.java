@@ -31,7 +31,6 @@ public class EateryDBManager extends SQLiteOpenHelper {
     private static final String DB_TABLE_DISHES = "dishesTable";
     private static final String DB_TABLE_MENU = "menuTable";
     private static final String DB_TABLE_ORDERS = "ordersTable";
-    private static final String DB_TABLE_SETTINGS = "settingsTable";
 
     // имя каждого столбца в БД
     public static final String KEY_ID = "_id";
@@ -53,11 +52,6 @@ public class EateryDBManager extends SQLiteOpenHelper {
     public static final String ORDERS_DATE_NAME = "date";
     public static final String ORDERS_DISH_ID_NAME = "dish_id";
 
-    // таблица SETTINGS
-    public static final String SETTINGS_SERVER_NAME = "server";
-    public static final String SETTINGS_LOGIN_NAME = "login";
-    public static final String SETTINGS_PASSWORD_NAME = "password";
-    public static final String SETTINGS_MODE_NAME = "mode";
 
 	// экземпляр БД
 	private SQLiteDatabase mDb;
@@ -130,17 +124,6 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		query.append(DB_TABLE_ORDERS).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
 		query.append(ORDERS_DATE_NAME).append(" DATE NOT NULL, ");
 		query.append(ORDERS_DISH_ID_NAME).append(" INTEGER NOT NULL);");
-		_db.execSQL(query.toString());
-		
-		query = new StringBuilder();
-		
-		// SETTINGS
-		query.append("CREATE TABLE ");
-		query.append(DB_TABLE_SETTINGS).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
-		query.append(SETTINGS_SERVER_NAME).append(" TEXT NOT NULL, ");
-		query.append(SETTINGS_LOGIN_NAME).append(" TEXT NOT NULL, ");
-		query.append(SETTINGS_PASSWORD_NAME).append(" TEXT NOT NULL, ");
-		query.append(SETTINGS_MODE_NAME).append(" TEXT NOT NULL DEFAULT online);");
 		_db.execSQL(query.toString());
 		
 		Log.i(LOG_TAG, "Created database");
@@ -626,66 +609,5 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			
 			Log.i(LOG_TAG, "Database cleared");
 		}
-	}
-
-	
-	// НАСТРОЙКИ
-
-	/**
-	 * Сохраняет настройки
-	 * 
-	 * @param server
-	 *     адрес сервера
-	 * @param login
-	 *     логин
-	 * @param password
-	 *     пароль
-	 * @param mode
-	 *     режим работы
-	 */
-	public void saveSettings(String server, String login, String password, String mode) {
-		ContentValues data = new ContentValues();
-		data.put(SETTINGS_SERVER_NAME, server);
-		data.put(SETTINGS_LOGIN_NAME, login);
-		data.put(SETTINGS_PASSWORD_NAME, password);
-		data.put(SETTINGS_MODE_NAME, mode);
-		
-		mDb.beginTransaction();
-		try {
-			mDb.delete(DB_TABLE_SETTINGS, null, null);
-			mDb.insert(DB_TABLE_SETTINGS, null, data);
-			mDb.setTransactionSuccessful();
-		} finally {
-			mDb.endTransaction();
-			
-			Log.i(LOG_TAG, "Settings updated");
-		}
-	}
-
-	/**
-	 * Возвращает настройки
-	 * 
-	 * @return
-	 *     {@link List} из {@link String} с настройками:
-	 *     адрес сервера, логин, пароль, режим работы
-	 */
-	public List<String> getSettings() {
-		List<String> result = new ArrayList<String>();
-		
-		mDb.beginTransaction();
-		try {
-			Cursor c = mDb.query(false, DB_TABLE_SETTINGS, null, null, null, null, null, null, null);
-			mDb.setTransactionSuccessful();
-			
-			c.moveToFirst();
-			result.add(c.getString(1));
-			result.add(c.getString(2));
-			result.add(c.getString(3));
-			result.add(c.getString(4));
-			c.close();
-		} finally {
-			mDb.endTransaction();
-		}
-		return result;
 	}
 }
