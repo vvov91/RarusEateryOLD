@@ -20,27 +20,27 @@
  public void setDishRating(int id, String rating)
 	Меняет рейтинг блюда по его id.
 -----------
- public void addMenu(String date, List<Dish> dishes)
+ public void addMenu(int date, List<Dish> dishes)
 	Добавляет меню.
-	Дата в формате YYYY-MM-DD, List из объектов Dish.
+	Дата в Unix time формате, List из объектов Dish.
 -----------
  public void deleteAllMenu()
 	Удаление всех меню.
 -----------
- public void deleteMenuAtDate(String date)
+ public void deleteMenuAtDate(int date)
 	Удаление меню на определенную дату.
-	Дата в формате YYYY-MM-DD.
+	Дата в Unix time формате.
 -----------
- public List<String> getMenuDates()
-	Список дат на которые доступно меню.
-	Возвращает List из строк дат в формате YYYY-MM-DD. Даты остортированы по возрастанию.
+ public int[] getMenuDates()
+	Массив дат на которые доступно меню.
+	Возвращает массив int[] из Unix time дат. Даты остортированы по возрастанию.
 -----------
  public int getMenuDatesCount()
 	Возвращает количество дат на которые доступны меню.
 -----------
- public List<Dish> getMenuListAtDate(String date)
+ public List<Dish> getMenuListAtDate(int date)
 	Возвращает меню на определенную дату.
-	Дата в формате YYYY-MM-DD. Возвращает List объектов Dish с полями:
+	Дата в Unix time формате. Возвращает List объектов Dish с полями:
 		- id блюда
 		- название
 		- описание
@@ -50,21 +50,21 @@
 		- доступный для заказа объём
 		- заказанный объём
 -----------
- public int getMenuCountAtDate(String date)
+ public int getMenuCountAtDate(int date)
 	Возвращает количество блюд находящихся в меню на определенную дату.
-	Дата в формате YYYY-MM-DD.
+	Дата в Unix time формате.
 -----------
- public void addOrder(String date, List<Dish> dishes)
+ public void addOrder(int date, List<Dish> dishes)
 	Добавление заказа.
-	Дата в формате YYYY-MM-DD, List из объектов Dish.
+	Дата в Unix time формате, List из объектов Dish.
 -----------
- public void deleteOrder(String date, int dishId)
+ public void deleteOrder(int date, int dishId)
 	Удаление блюда из заказа.
-	Дата в формате YYYY-MM-DD и id блюда.
+	Дата в Unix time формате и id блюда.
 -----------
- void deleteOrderAtDate(String date)
+ void deleteOrderAtDate(int date)
 	Удаление всего заказанного на определенную дату.
-	Дата в формате YYYY-MM-DD.
+	Дата в Unix time формате.
 -----------
  public void deleteAllOrder()
 	Удаление всех заказов.
@@ -72,13 +72,13 @@
  public int getOrderCount()
 	Возвращает количество имеющихся заказов.
 -----------
- public int getOrderCountAtDate(String date)
+ public int getOrderCountAtDate(int date)
 	Возвращает количество заказанных блюд на определённую дату.
-	Дата в формате YYYY-MM-DD.
+	Дата в Unix time формате.
 -----------
- public ArrayList<Dish> getOrderListAtDate(String date)
+ public List<Dish> getOrderListAtDate(int date)
 	Возвращает заказанные на определенную дату блюда.
-	Дата в формате YYYY-MM-DD. Возвращает List объектов Dish с полями:
+	Дата в Unix time формате. Возвращает List объектов Dish с полями:
 		- id блюда
 		- название
 		- описание
@@ -90,12 +90,4 @@
 -----------
  public void deleteAll()
 	Удаляет все данные по блюдам, меню и заказам.
------------
- public void saveSettings(String server, String login, String password, String mode)
-	Сохраняет настройки.
-	Адрес сервера, логин, пароль и режим работы (online/offline).
------------
- public List<String> getSettings()
-	Возвращает настройки.
-	List строк с настройками: адрес сервера, логин, пароль и режим работы.
 -----------
