@@ -101,7 +101,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		query.append(DB_TABLE_DISHES).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
 		query.append(DISHES_NAME_NAME).append(" TEXT NOT NULL, ");
 		query.append(DISHES_DESCRIPTION_NAME).append(" TEXT NOT NULL, ");
-		query.append(DISHES_PORTIONED_NAME).append(" INT DEFAULT 0, ");
+		query.append(DISHES_PORTIONED_NAME).append(" INTEGER DEFAULT 0, ");
 		query.append(DISHES_PRICE_NAME).append(" FLOAT NOT NULL, ");
 		query.append(DISHES_RATING_NAME).append(" TEXT DEFAULT 0);");		
 		_db.execSQL(query.toString());
@@ -111,7 +111,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		// MENU		
 		query.append("CREATE TABLE ");
 		query.append(DB_TABLE_MENU).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
-		query.append(MENU_DATE_NAME).append(" DATE NOT NULL, ");
+		query.append(MENU_DATE_NAME).append(" INTEGER NOT NULL, ");
 		query.append(MENU_DISH_ID_NAME).append(" INTEGER NOT NULL, ");
 		query.append(MENU_AVALAM_NAME).append(" FLOAT NOT NULL DEFAULT -1, ");
 		query.append(MENU_ORDERAM_NAME).append(" FLOAT NOT NULL DEFAULT 0);");
@@ -122,7 +122,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		// ORDERS
 		query.append("CREATE TABLE ");
 		query.append(DB_TABLE_ORDERS).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
-		query.append(ORDERS_DATE_NAME).append(" DATE NOT NULL, ");
+		query.append(ORDERS_DATE_NAME).append(" INTEGER NOT NULL, ");
 		query.append(ORDERS_DISH_ID_NAME).append(" INTEGER NOT NULL);");
 		_db.execSQL(query.toString());
 		
@@ -185,18 +185,20 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Добавляет меню
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 * @param dishes
 	 *     {@link List} из объектов {@link Dish}
 	 */
-	public void addMenu(String date, List<Dish> dishes) {
+	public void addMenu(int date, List<Dish> dishes) {
 		ContentValues data = new ContentValues();
 		InsertHelper ih = new InsertHelper(mDb, DB_TABLE_MENU);
-		
+				
 		final int muDateI = ih.getColumnIndex(MENU_DATE_NAME);
 		final int muDishIdI = ih.getColumnIndex(MENU_DISH_ID_NAME);
 		final int muAvalamI = ih.getColumnIndex(MENU_AVALAM_NAME);
 		final int muOrderamI = ih.getColumnIndex(MENU_ORDERAM_NAME);
+		
+		date = date - (date % 86400);
 	
 		mDb.beginTransaction();
 		try {
@@ -235,7 +237,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		} finally {
 			mDb.endTransaction();
 			
-			Log.i(LOG_TAG, "Added menu on " + date + ". Dishes count: " + dishes.size());
+			Log.i(LOG_TAG, "Added menu on " + Integer.toString(date) + ". Dishes count: " + 
+					dishes.size());
 		}
 	}
 	
@@ -258,29 +261,32 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Удаляет меню на определенную дату
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 */
-	public void deleteMenuAtDate(String date) {
+	public void deleteMenuAtDate(int date) {		
+		date = date - (date % 86400);
+		
 		mDb.beginTransaction();
 		try {
-			mDb.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ?", new String[] {date});
+			mDb.delete(DB_TABLE_MENU, MENU_DATE_NAME + " = ?", 
+					new String[] {Integer.toString(date)});
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
 			
-			Log.i(LOG_TAG, "Deleted menu, date (" + date + ")");
+			Log.i(LOG_TAG, "Deleted menu, date (" + Integer.toString(date) + ")");
 		}
 	}  
 
 	/**
-	 * Возвращает массив строк с датами на которые доступно меню
+	 * Возвращает массив дат на которые доступно меню
 	 * 
 	 * @return
-	 *     {@link List} из {@link String} дат.
-	 *     Даты в формате YYYY-MM-DD. Отсортированы по возрастанию.
+	 *     Массив int[] из Unix time дат.
+	 *     Даты в Unix time формате. Отсортированы по возрастанию.
 	 */
-	public List<String> getMenuDates() {
-		List<String> result = new ArrayList<String>();
+	public int[] getMenuDates() {
+		int[] result = {};
 		
 		mDb.beginTransaction();
 		try {
@@ -288,10 +294,13 @@ public class EateryDBManager extends SQLiteOpenHelper {
 					null, null, MENU_DATE_NAME + " ASC", null);
 			mDb.setTransactionSuccessful();
 			
-			if (c.moveToFirst()) {
-				do {
-					result.add(c.getString(0));
-				} while(c.moveToNext());
+			if (c.getCount() > 0) {
+				result = new int[c.getCount()];
+				c.moveToFirst();
+				for (int i = 0; i < c.getCount(); i++) {
+					result[i] = c.getInt(0);
+					c.moveToNext();
+				}
 				c.close();
 			}
 		} finally {
@@ -331,12 +340,14 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Возвращает меню на определенную дату
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 * @return
 	 *     {@link List} из объектов {@link Dish}
 	 */
-	public List<Dish> getMenuListAtDate(String date) {
+	public List<Dish> getMenuListAtDate(int date) {
 		List<Dish> result = new ArrayList<Dish>();
+		
+		date = date - (date % 86400);
 		
 		StringBuilder query = new StringBuilder();
 		query.append(DB_TABLE_MENU).append(" AS MU INNER JOIN ").append(DB_TABLE_DISHES);
@@ -348,7 +359,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, 
 					DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, 
 					MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
-					MENU_DATE_NAME + " = ?", new String[] {date}, null, null, null, null);
+					MENU_DATE_NAME + " = ?", new String[] {Integer.toString(date)}, null, null, 
+					null, null);
 			mDb.setTransactionSuccessful();
 			
 			if (c.moveToFirst()) {
@@ -376,12 +388,13 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Возвращает количество блюд в меню на определенную дату
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 * @return
-	 *     int кол-во дат
+	 *     int кол-во блюд
 	 */
-	public int getMenuCountAtDate(String date) {
-		int result = 0;
+	public int getMenuCountAtDate(int date) {
+		int result = 0;		
+		date = date - (date % 86400);
 		
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT COUNT(").append(MENU_DISH_ID_NAME).append(") FROM ");
@@ -389,7 +402,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.rawQuery(query.toString(), new String[] {date});
+			Cursor c = mDb.rawQuery(query.toString(), new String[] {Integer.toString(date)});
 			mDb.setTransactionSuccessful();			
 
 			c.moveToFirst();
@@ -408,15 +421,17 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Добавляет заказ
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 * @param dishes
 	 *     {@link List} из объектов {@link Dish}
 	 */
-	public void addOrder(String date, List<Dish> dishes) {
+	public void addOrder(int date, List<Dish> dishes) {
 		InsertHelper ih = new InsertHelper(mDb, DB_TABLE_ORDERS);
 		
 		final int orDateI = ih.getColumnIndex(ORDERS_DATE_NAME);
 		final int orDishIdI = ih.getColumnIndex(ORDERS_DISH_ID_NAME);
+		
+		date = date - (date % 86400);
 		
 		this.deleteOrderAtDate(date);
 		
@@ -432,7 +447,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		} finally {
 			mDb.endTransaction();
 			
-			Log.i(LOG_TAG, "Added order on " + date + ". Dishes count: " + dishes.size());
+			Log.i(LOG_TAG, "Added order on " + Integer.toString(date) + ". Dishes count: " +
+					dishes.size());
 		}
 	}
 
@@ -440,17 +456,20 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Удаляет заказ на определенную дату
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 * @param dishId
 	 *     id блюда
 	 */
-	public void deleteOrder(String date, int dishId) {
+	public void deleteOrder(int date, int dishId) {
 		StringBuilder query = new StringBuilder();
 		query.append(ORDERS_DATE_NAME).append(" = ? AND ").append(ORDERS_DISH_ID_NAME).append(" = ?");
 		
+		date = date - (date % 86400);
+		
 		mDb.beginTransaction();
 		try {
-			mDb.delete(DB_TABLE_ORDERS, query.toString(), new String[] {date, Integer.toString(dishId)});
+			mDb.delete(DB_TABLE_ORDERS, query.toString(), new String[] {Integer.toString(date),
+				Integer.toString(dishId)});
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
@@ -461,17 +480,20 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Удаляет все заказы на определенную дату
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 */
-	public void deleteOrderAtDate(String date) {
+	public void deleteOrderAtDate(int date) {		
+		date = date - (date % 86400);
+		
 		mDb.beginTransaction();
 		try {
-			mDb.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ?", new String[] {date});
+			mDb.delete(DB_TABLE_ORDERS, ORDERS_DATE_NAME + " = ?", 
+					new String[] {Integer.toString(date)});
 			mDb.setTransactionSuccessful();
 		} finally {
 			mDb.endTransaction();
 			
-			Log.i(LOG_TAG, "Deleted order on " + date);
+			Log.i(LOG_TAG, "Deleted order on " + Integer.toString(date));
 		}
 	}
 
@@ -521,12 +543,13 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	 * Возвращает количество заказанных блюд на определенную дату
 	 * 
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 * @return
 	 *     int кол-во заказанных блюд
 	 */
-	public int getOrderCountAtDate(String date) {
-		int result = 0;
+	public int getOrderCountAtDate(int date) {
+		int result = 0;		
+		date = date - (date % 86400);
 		
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT COUNT(").append(ORDERS_DISH_ID_NAME).append(") ").append("FROM ");
@@ -534,7 +557,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		
 		mDb.beginTransaction();
 		try {
-			Cursor c = mDb.rawQuery(query.toString(), new String[] {date});
+			Cursor c = mDb.rawQuery(query.toString(), new String[] {Integer.toString(date)});
 			mDb.setTransactionSuccessful();
 			
 			c.moveToFirst();
@@ -549,12 +572,14 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	/**
 	 * Возвращает объекты {@link Dish} заказов на определенную дату
 	 * @param date
-	 *     дата в формате YYYY-MM-DD
+	 *     дата в Unix time формате
 	 * @return
 	 *     {@link List} из объектов {@link Dish}
 	 */
-	public List<Dish> getOrderListAtDate(String date) {
+	public List<Dish> getOrderListAtDate(int date) {
 		List<Dish> result = new ArrayList<Dish>();
+		
+		date = date - (date % 86400);
 		
 		StringBuilder query = new StringBuilder();
 		query.append(DB_TABLE_ORDERS).append(" AS OS INNER JOIN ").append(DB_TABLE_DISHES);
@@ -569,7 +594,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 					new String[] {"DS." + KEY_ID, DISHES_NAME_NAME, DISHES_DESCRIPTION_NAME, 
 					DISHES_PORTIONED_NAME, DISHES_PRICE_NAME, DISHES_RATING_NAME, 
 					MENU_AVALAM_NAME, MENU_ORDERAM_NAME},
-					"OS." + ORDERS_DATE_NAME + " = ?", new String[] {date}, null, null, null, null);
+					"OS." + ORDERS_DATE_NAME + " = ?", new String[] {Integer.toString(date)}, 
+					null, null, null, null);
 			mDb.setTransactionSuccessful();
 			
 			if (c.moveToFirst()) {

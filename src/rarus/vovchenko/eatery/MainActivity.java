@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
-	// адаптер для работы с БД
-	EateryDBManager db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,5 +24,6 @@ public class MainActivity extends Activity {
     @Override
     public void onDestroy() {
     	super.onDestroy();
+    	stopService(new Intent(this, EateryWebService.class));
     }
 }

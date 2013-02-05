@@ -1,7 +1,6 @@
 package rarus.vovchenko.eatery;
 
 import java.io.StringWriter;
-import java.util.List;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -27,8 +26,6 @@ public class EateryWebService extends Service {
 	// режим работы
 	private static final String MODE = "offline";
 	
-	// экземпляр менеджера БД 
-	private final EateryDBManager db  = new EateryDBManager(this);
 	
 	// префиксы XML
 	private static final String SOAP_PREFIX = "http://schemas.xmlsoap.org/soap/envelope/";
