@@ -279,14 +279,14 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	}  
 
 	/**
-	 * Возвращает массив дат на которые доступно меню
+	 * Возвращает список дат на которые доступно меню
 	 * 
 	 * @return
-	 *     Массив int[] из Unix time дат.
+	 *     {@link List} из {@link Integer} Unix time дат.
 	 *     Даты в Unix time формате. Отсортированы по возрастанию.
 	 */
-	public int[] getMenuDates() {
-		int[] result = {};
+	public List<Integer> getMenuDates() {
+		List<Integer> result = new ArrayList<Integer>();
 		
 		mDb.beginTransaction();
 		try {
@@ -295,12 +295,10 @@ public class EateryDBManager extends SQLiteOpenHelper {
 			mDb.setTransactionSuccessful();
 			
 			if (c.getCount() > 0) {
-				result = new int[c.getCount()];
 				c.moveToFirst();
-				for (int i = 0; i < c.getCount(); i++) {
-					result[i] = c.getInt(0);
-					c.moveToNext();
-				}
+				do {
+					result.add(c.getInt(0));
+				} while(c.moveToNext());
 				c.close();
 			}
 		} finally {
