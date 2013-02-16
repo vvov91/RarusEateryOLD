@@ -98,7 +98,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		// создаём необходимые таблицы
 	    // DISHES
 		query.append("CREATE TABLE ");
-		query.append(DB_TABLE_DISHES).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		query.append(DB_TABLE_DISHES).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY, ");
 		query.append(DISHES_NAME_NAME).append(" TEXT NOT NULL, ");
 		query.append(DISHES_DESCRIPTION_NAME).append(" TEXT NOT NULL, ");
 		query.append(DISHES_PORTIONED_NAME).append(" INTEGER DEFAULT 0, ");
@@ -110,7 +110,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		
 		// MENU		
 		query.append("CREATE TABLE ");
-		query.append(DB_TABLE_MENU).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		query.append(DB_TABLE_MENU).append(" (").append(KEY_ID);
+		query.append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
 		query.append(MENU_DATE_NAME).append(" INTEGER NOT NULL, ");
 		query.append(MENU_DISH_ID_NAME).append(" INTEGER NOT NULL, ");
 		query.append(MENU_AVALAM_NAME).append(" FLOAT NOT NULL DEFAULT -1, ");
@@ -121,7 +122,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		
 		// ORDERS
 		query.append("CREATE TABLE ");
-		query.append(DB_TABLE_ORDERS).append(" (").append(KEY_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		query.append(DB_TABLE_ORDERS).append(" (").append(KEY_ID);
+		query.append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
 		query.append(ORDERS_DATE_NAME).append(" INTEGER NOT NULL, ");
 		query.append(ORDERS_DISH_ID_NAME).append(" INTEGER NOT NULL);");
 		_db.execSQL(query.toString());
@@ -192,7 +194,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 	public void addMenu(int date, List<Dish> dishes) {
 		ContentValues data = new ContentValues();
 		InsertHelper ih = new InsertHelper(mDb, DB_TABLE_MENU);
-				
+
 		final int muDateI = ih.getColumnIndex(MENU_DATE_NAME);
 		final int muDishIdI = ih.getColumnIndex(MENU_DISH_ID_NAME);
 		final int muAvalamI = ih.getColumnIndex(MENU_AVALAM_NAME);
@@ -203,8 +205,8 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		mDb.beginTransaction();
 		try {
 			for (int i = 0; i < dishes.size(); i++) {
-				Cursor c = mDb.query(false, DB_TABLE_DISHES, new String[] {KEY_ID},
-						DISHES_NAME_NAME + " = ?", new String[] {dishes.get(i).getName()}, null,
+				Cursor c = mDb.query(false, DB_TABLE_DISHES, new String[] {DISHES_NAME_NAME},
+						KEY_ID + " = ?", new String[] {Integer.toString(dishes.get(i).getId())}, null,
 						null, null, null);
 				
 				c.moveToFirst();
@@ -213,7 +215,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 				
 				if (c.getCount() > 0) {
 					ih.bind(muDateI, date);
-					ih.bind(muDishIdI, c.getInt(0));
+					ih.bind(muDishIdI, dishes.get(i).getId());
 					ih.bind(muAvalamI, dishes.get(i).getAvailableAmmount());
 					ih.bind(muOrderamI, dishes.get(i).getOrderedAmmount());
 				} else {
@@ -430,9 +432,7 @@ public class EateryDBManager extends SQLiteOpenHelper {
 		final int orDishIdI = ih.getColumnIndex(ORDERS_DISH_ID_NAME);
 		
 		date = date - (date % 86400);
-		
-		this.deleteOrderAtDate(date);
-		
+				
 		mDb.beginTransaction();
 		try {
 			for (int i = 0; i < dishes.size(); i++) {
