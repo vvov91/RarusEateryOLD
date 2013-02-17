@@ -1,8 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Столовая</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">Столовая</string>
-
+    <string name="page_tags">Tags</string>
+    <string name="menu_title">Меню</string>
+    <string name="client_name">Миша Сидоров</string>
+    <string name="avatar">Аватар</string>
+    <string name="page_menu">Меню</string>
+    <string name="page_orders">Заказы</string>
+    <string name="page_settings">Настройки</string>
+    <string name="refresh">Обновить</string>
 </resources>

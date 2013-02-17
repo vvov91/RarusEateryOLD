@@ -1,5 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<style name="Widget.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
+		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+		<item name="android:background">@color/emphasis</item>
+	</style>
+	
+	<style name="Widget.ActionBar.Main" parent="Widget.ActionBar">
+	    <!-- We set title here so we don't get a flash of "Delicious" -->
+	    <item name="android:title">@string/page_menu</item>
+	</style>
 
-    <style name="AppTheme" parent="android:Theme.Light" />
+	<style name="Widget.ActionBar.Login" parent="Widget.ActionBar">
+	    <item name="android:displayOptions">showTitle|showHome</item>
+	</style>
 
+	<style name="Theme.Eatery" parent="android:Theme.Holo.Light.DarkActionBar">
+		<item name="android:actionBarStyle">@style/Widget.ActionBar</item>
+		<item name="android:actionModeCloseDrawable">@drawable/ic_action_cancel</item>
+	</style>
+	
+	<style name="Theme.Eatery.Main" parent="Theme.Eatery">
+        <item name="android:actionBarStyle">@style/Widget.ActionBar.Main</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_action_flyout_menu</item>
+        <item name="android:title">Столовая</item>
+    </style>
+	
+	<style name="sectionHeader" parent="android:Widget.Holo.Light.TextView">
+        <item name="android:drawableBottom">@drawable/section_header</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textColor">@color/emphasis</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+    
+
+	<style name="flyoutItem" parent="android:Widget.Holo.TextView">
+		<item name="android:background">?android:attr/selectableItemBackground</item>
+		<item name="android:drawablePadding">8dip</item>
+		<item name="android:gravity">center_vertical</item>
+		<item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
+		<item name="android:paddingBottom">4dip</item>
+		<item name="android:paddingLeft">16dip</item>
+		<item name="android:paddingRight">8dip</item>
+		<item name="android:paddingTop">4dip</item>
+		<item name="android:textAppearance">?android:attr/textAppearanceMediumInverse</item>
+	</style>
 </resources>
